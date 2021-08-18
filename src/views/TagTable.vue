@@ -16,8 +16,10 @@
             </div>
 
             <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-                <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-                <el-table-column prop="name" label="标签名">
+                <el-table-column prop="id" label="ID" width="55" align="center">
+                    <template #default="scope">{{scope.row.id}}</template>
+                </el-table-column>
+                <el-table-column prop="tagName" label="标签名">
                     <template #default="scope">{{scope.row.tagName}}</template>
                 </el-table-column>
                 <el-table-column label="使用次数">
@@ -130,17 +132,26 @@ export default {
         let idx = -1;
         const handleEdit = (index, row) => {
             idx = index;
-            Object.keys(form).forEach((item) => {
-                form[item] = row[item];
-            });
+            form.name=row.tagName;
             editVisible.value = true;
         };
         const saveEdit = () => {
             editVisible.value = false;
+            var rowData=tableData.value[idx];
+            axios({
+                url:'/leyuna/tagType/updateTagsAndTypes',
+                method:'get',
+                data: {
+                    'tags':{
+                        "id":rowData.id,
+                        "tagName":form.name
+                    }
+                }
+            }).then((res)=>{
+
+            })
             ElMessage.success(`修改第 ${idx + 1} 行成功`);
-            Object.keys(form).forEach((item) => {
-                tableData.value[idx][item] = form[item];
-            });
+            tableData.value[idx].tagName = form.name;
         };
 
         return {
