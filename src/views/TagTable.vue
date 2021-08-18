@@ -88,7 +88,8 @@ export default {
                 url: '/leyuna/tagType/tags',
                 params: {
                     pageIndex: query.pageIndex,
-                    pageSize: query.pageSize
+                    pageSize: query.pageSize,
+                    conditionName: query.name
                 }
             }).then((res) =>{
                 tableData.value = res.data.listData;
