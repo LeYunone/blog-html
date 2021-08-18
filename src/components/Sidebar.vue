@@ -45,8 +45,18 @@ export default {
             },
             {
                 icon: "el-icon-lx-cascades",
-                index: "/table",
-                title: "基础表格",
+                index: "2",
+                title: "内容管理",
+                subs: [
+                    {
+                        index: "/tag",
+                        title: "标签管理",
+                    },
+                    {
+                        index: "/type",
+                        title: "分类管理",
+                    },
+                ],
             },
             {
                 icon: "el-icon-lx-copy",

@@ -1,6 +1,19 @@
 import {createRouter, createWebHashHistory} from "vue-router";
 import Home from "../views/Home.vue";
 
+// module.exports = {
+//     dev:{
+//         assetsSubDirectory: 'static',
+//         assetsPublicPath: '/',
+//         proxyTable: {
+//             '/leyuna':{
+//                 target: 'http://127.0.0.1:9000',
+//                 changOrigin: true,
+//                 secure: false
+//             }
+//         }
+//     }
+// }
 const routes = [
     {
         path: '/',
@@ -109,6 +122,20 @@ const routes = [
                     title: '富文本编辑器'
                 },
                 component: () => import (/* webpackChunkName: "editor" */ '../views/Editor.vue')
+            },{
+                path: '/tag',
+                name: 'tag',
+                meta:{
+                    title: '标签管理'
+                },
+                component : () => import("../views/TagTable.vue" )
+            },{
+                path: '/type',
+                name: 'type',
+                meta:{
+                    title: '分类管理'
+                },
+                component : () => import("../views/TypeTable.vue")
             }
         ]
     }, {
