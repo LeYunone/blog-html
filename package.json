@@ -8,6 +8,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "@kangc/v-md-editor": "^2.3.8",
     "axios": "^0.21.1",
     "element-plus": "1.0.2-beta.52",
     "mavon-editor": "^2.9.1",

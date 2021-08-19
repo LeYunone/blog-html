@@ -99,7 +99,7 @@ export default {
                 title: "网站数据",
             },
             {
-                icon: "el-icon-pie-edit",
+                icon: "el-icon-lx-calendar",
                 index: "/markdown",
                 title: "发布博客",
             },
