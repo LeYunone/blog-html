@@ -31,19 +31,12 @@ const routes = [
                 },
                 component: () => import ( /* webpackChunkName: "dashboard" */ "../views/Dashboard.vue")
             }, {
-                path: "/table",
-                name: "basetable",
+                path: "/webdata",
+                name: "webdata",
                 meta: {
-                    title: '表格'
+                    title: '网站数据'
                 },
-                component: () => import ( /* webpackChunkName: "table" */ "../views/BaseTable.vue")
-            }, {
-                path: "/charts",
-                name: "basecharts",
-                meta: {
-                    title: '图表'
-                },
-                component: () => import ( /* webpackChunkName: "charts" */ "../views/BaseCharts.vue")
+                component: () => import ( /* webpackChunkName: "charts" */ "../views/WebData.vue")
             }, {
                 path: "/form",
                 name: "baseform",
@@ -51,7 +44,14 @@ const routes = [
                     title: '表单'
                 },
                 component: () => import ( /* webpackChunkName: "form" */ "../views/BaseForm.vue")
-            }, {
+            },{
+                path: "/markdown",
+                name: "markdown",
+                meta: {
+                    title: '发布博客'
+                },
+                component: () => import ( /* webpackChunkName: "charts" */ "../views/Markdown.vue")
+            },{
                 path: "/tabs",
                 name: "tabs",
                 meta: {

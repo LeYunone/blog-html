@@ -12,7 +12,7 @@
             <div class="handle-box">
                 <el-input v-model="query.name" placeholder="标签名" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
-                <el-button type="success" id="addBtn" icon="el-icon-roundadd" @click="handleSearch">添加</el-button>
+                <el-button type="success" @click="handleAdd()" id="addBtn" icon="el-icon-roundadd">添加</el-button>
             </div>
 
             <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
@@ -66,6 +66,21 @@
                 </span>
             </template>
         </el-dialog>
+
+        <!-- 添加弹出框 -->
+        <el-dialog title="添加" v-model="addVisible" width="30%">
+            <el-form label-width="70px">
+                <el-form-item label="标签名">
+                    <el-input v-model="form.addName"></el-input>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="addVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="saveAdd">确 定</el-button>
+                </span>
+            </template>
+        </el-dialog>
     </div>
 </template>
 
@@ -116,20 +131,52 @@ export default {
             // 二次确认删除
             ElMessageBox.confirm("确定要删除吗？", "提示", {
                 type: "warning",
-            })
-                .then(() => {
+            }).then(() => {
+                axios({
+                    url:"/leyuna/tagType/deleteTagsAndTypes",
+                    method:'GET',
+                    params:{
+                        tags:tableData.value[index].id
+                    }
+                }).then(() =>{
                     ElMessage.success("删除成功");
-                    tableData.value.splice(index, 1);
+                    getData();
                 })
-                .catch(() => {});
+            })
+            .catch(() => {});
         };
 
         // 表格编辑时弹窗和保存
+        const addVisible = ref(false);
         const editVisible = ref(false);
         let form = reactive({
             name: "",
+            addName:""
         });
         let idx = -1;
+
+        const handleAdd = () => {
+            addVisible.value = true;
+        };
+        const saveAdd = () => {
+            addVisible.value = false;
+            axios({
+                url:'/leyuna/tagType/addTagsAndTypes',
+                method:'post',
+                params: {
+                    tags:form.addName
+                }
+            }).then((res)=>{
+                if(res.data.code=='404'){
+                    ElMessage.error(res.data.srcData);
+                }else{
+                    ElMessage.success('添加成功');
+                    getData();
+                }
+                idx= -1;
+            })
+        };
+
         const handleEdit = (index, row) => {
             idx = index;
             form.name=row.tagName;
@@ -139,22 +186,27 @@ export default {
             editVisible.value = false;
             var rowData=tableData.value[idx];
             axios({
-                url:'/leyuna/tagType/updateTagsAndTypes',
-                method:'get',
-                data: {
-                    'tags':{
-                        "id":rowData.id,
-                        "tagName":form.name
-                    }
+                url:'/leyuna/tagType/updateTag',
+                method:'post',
+                params: {
+                    id:rowData.id,
+                    tagName:form.name
                 }
             }).then((res)=>{
-
+                if(res.data.code=='404'){
+                    ElMessage.error(res.data.srcData);
+                }else{
+                    ElMessage.success(`修改 ${rowData.tagName} [标签]成功`);
+                    tableData.value[idx].tagName = form.name;
+                }
+                idx= -1;
             })
-            ElMessage.success(`修改第 ${idx + 1} 行成功`);
-            tableData.value[idx].tagName = form.name;
         };
 
         return {
+            addVisible,
+            handleAdd,
+            saveAdd,
             query,
             tableData,
             pageTotal,

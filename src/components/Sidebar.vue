@@ -95,8 +95,13 @@ export default {
             },
             {
                 icon: "el-icon-pie-chart",
-                index: "/charts",
-                title: "schart图表",
+                index: "/webdata",
+                title: "网站数据",
+            },
+            {
+                icon: "el-icon-pie-edit",
+                index: "/markdown",
+                title: "发布博客",
             },
             {
                 icon: "el-icon-lx-global",

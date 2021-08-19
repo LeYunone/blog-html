@@ -3,68 +3,60 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item>
-                    <i class="el-icon-lx-cascades"></i> 基础表格
+                    <i class="el-icon-lx-tag"></i> 分类管理
                 </el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
+            <!--搜索-->
             <div class="handle-box">
-                <el-select v-model="query.address" placeholder="地址" class="handle-select mr10">
-                    <el-option key="1" label="广东省" value="广东省"></el-option>
-                    <el-option key="2" label="湖南省" value="湖南省"></el-option>
-                </el-select>
-                <el-input v-model="query.name" placeholder="用户名" class="handle-input mr10"></el-input>
+                <el-input v-model="query.name" placeholder="分类名" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+                <el-button type="success" @click="handleAdd()" id="addBtn" icon="el-icon-roundadd">添加</el-button>
             </div>
+
             <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-                <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-                <el-table-column prop="name" label="用户名"></el-table-column>
-                <el-table-column label="账户余额">
-                    <template #default="scope">￥{{ scope.row.money }}</template>
+                <el-table-column prop="id" label="ID" width="55" align="center">
+                    <template #default="scope">{{scope.row.id}}</template>
                 </el-table-column>
-                <el-table-column label="头像(查看大图)" align="center">
-                    <template #default="scope">
-                        <el-image class="table-td-thumb" :src="scope.row.thumb" :preview-src-list="[scope.row.thumb]">
-                        </el-image>
-                    </template>
+                <el-table-column prop="typeName" label="分类名">
+                    <template #default="scope">{{scope.row.typeName}}</template>
                 </el-table-column>
-                <el-table-column prop="address" label="地址"></el-table-column>
+                <el-table-column label="使用次数">
+                    <template #default="scope">{{ scope.row.useCount}}</template>
+                </el-table-column>
                 <el-table-column label="状态" align="center">
                     <template #default="scope">
-                        <el-tag :type="
-                                scope.row.state === '成功'
-                                    ? 'success'
-                                    : scope.row.state === '失败'
-                                    ? 'danger'
-                                    : ''
-                            ">{{ scope.row.state }}</el-tag>
+                        <el-tag  :type="
+                                scope.row.userStatus === 'hot'
+                                    ? 'success' : 'danger'
+                            ">{{ scope.row.userStatus }}</el-tag>
                     </template>
                 </el-table-column>
 
-                <el-table-column prop="date" label="注册时间"></el-table-column>
+                <el-table-column prop="date" label="创建时间">
+                    <template #default="scope">{{ scope.row.createTime}}</template>
+                </el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template #default="scope">
                         <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑
                         </el-button>
                         <el-button type="text" icon="el-icon-delete" class="red"
-                            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                   @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
             <div class="pagination">
                 <el-pagination background layout="total, prev, pager, next" :current-page="query.pageIndex"
-                    :page-size="query.pageSize" :total="pageTotal" @current-change="handlePageChange"></el-pagination>
+                               :page-size="query.pageSize" :total="pageTotal" @current-change="handlePageChange"></el-pagination>
             </div>
         </div>
 
         <!-- 编辑弹出框 -->
         <el-dialog title="编辑" v-model="editVisible" width="30%">
             <el-form label-width="70px">
-                <el-form-item label="用户名">
+                <el-form-item label="分类名">
                     <el-input v-model="form.name"></el-input>
-                </el-form-item>
-                <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
                 </el-form-item>
             </el-form>
             <template #footer>
@@ -74,123 +66,192 @@
                 </span>
             </template>
         </el-dialog>
+
+        <!-- 添加弹出框 -->
+        <el-dialog title="添加" v-model="addVisible" width="30%">
+            <el-form label-width="70px">
+                <el-form-item label="分类名">
+                    <el-input v-model="form.addName"></el-input>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="addVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="saveAdd">确 定</el-button>
+                </span>
+            </template>
+        </el-dialog>
     </div>
 </template>
 
 <script>
-import { ref, reactive } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { fetchData } from "../api/index";
-
-export default {
-    name: "basetable",
-    setup() {
-        const query = reactive({
-            address: "",
-            name: "",
-            pageIndex: 1,
-            pageSize: 10,
-        });
-        const tableData = ref([]);
-        const pageTotal = ref(0);
-        // 获取表格数据
-        const getData = () => {
-            fetchData(query).then((res) => {
-                tableData.value = res.list;
-                pageTotal.value = res.pageTotal || 50;
+    import { ref, reactive } from "vue";
+    import { ElMessage, ElMessageBox } from "element-plus";
+    import axios from "axios";
+    export default {
+        name: "typetable",
+        setup() {
+            const query = reactive({
+                name: "",
+                pageIndex: 1,
+                pageSize: 10,
             });
-        };
-        getData();
-
-        // 查询操作
-        const handleSearch = () => {
-            query.pageIndex = 1;
-            getData();
-        };
-        // 分页导航
-        const handlePageChange = (val) => {
-            query.pageIndex = val;
-            getData();
-        };
-
-        // 删除操作
-        const handleDelete = (index) => {
-            // 二次确认删除
-            ElMessageBox.confirm("确定要删除吗？", "提示", {
-                type: "warning",
-            })
-                .then(() => {
-                    ElMessage.success("删除成功");
-                    tableData.value.splice(index, 1);
+            const tableData = ref([]);
+            const pageTotal = ref(0);
+            // 获取表格数据
+            const getData = () => {
+                axios({
+                    method:'get',
+                    url: '/leyuna/tagType/types',
+                    params: {
+                        pageIndex: query.pageIndex,
+                        pageSize: query.pageSize,
+                        conditionName: query.name
+                    }
+                }).then((res) =>{
+                    tableData.value = res.data.listData;
+                    pageTotal.value=res.data.page.total || 50
                 })
-                .catch(() => {});
-        };
+            };
+            getData();
 
-        // 表格编辑时弹窗和保存
-        const editVisible = ref(false);
-        let form = reactive({
-            name: "",
-            address: "",
-        });
-        let idx = -1;
-        const handleEdit = (index, row) => {
-            idx = index;
-            Object.keys(form).forEach((item) => {
-                form[item] = row[item];
-            });
-            editVisible.value = true;
-        };
-        const saveEdit = () => {
-            editVisible.value = false;
-            ElMessage.success(`修改第 ${idx + 1} 行成功`);
-            Object.keys(form).forEach((item) => {
-                tableData.value[idx][item] = form[item];
-            });
-        };
+            // 查询操作
+            const handleSearch = () => {
+                query.pageIndex = 1;
+                getData();
+            };
+            // 分页导航
+            const handlePageChange = (val) => {
+                query.pageIndex = val;
+                getData();
+            };
 
-        return {
-            query,
-            tableData,
-            pageTotal,
-            editVisible,
-            form,
-            handleSearch,
-            handlePageChange,
-            handleDelete,
-            handleEdit,
-            saveEdit,
-        };
-    },
-};
+            // 删除操作
+            const handleDelete = (index) => {
+                // 二次确认删除
+                ElMessageBox.confirm("确定要删除吗？", "提示", {
+                    type: "warning",
+                }).then(() => {
+                    axios({
+                        url:"/leyuna/tagType/deleteTagsAndTypes",
+                        method:'GET',
+                        params:{
+                            types:tableData.value[index].id
+                        }
+                    }).then(() =>{
+                        ElMessage.success("删除成功");
+                        getData();
+                    })
+                })
+                    .catch(() => {});
+            };
+
+            // 表格编辑时弹窗和保存
+            const addVisible = ref(false);
+            const editVisible = ref(false);
+            let form = reactive({
+                name: "",
+                addName:""
+            });
+            let idx = -1;
+
+            const handleAdd = () => {
+                addVisible.value = true;
+            };
+            const saveAdd = () => {
+                addVisible.value = false;
+                axios({
+                    url:'/leyuna/tagType/addTagsAndTypes',
+                    method:'post',
+                    params: {
+                        types:form.addName
+                    }
+                }).then((res)=>{
+                    if(res.data.code=='404'){
+                        ElMessage.error(res.data.srcData);
+                    }else{
+                        ElMessage.success('添加成功');
+                        getData();
+                    }
+                    idx= -1;
+                })
+            };
+
+            const handleEdit = (index, row) => {
+                idx = index;
+                form.name=row.typeName;
+                editVisible.value = true;
+            };
+            const saveEdit = () => {
+                editVisible.value = false;
+                var rowData=tableData.value[idx];
+                axios({
+                    url:'/leyuna/tagType/updateType',
+                    method:'post',
+                    params: {
+                        id:rowData.id,
+                        typeName:form.name
+                    }
+                }).then((res)=>{
+                    if(res.data.code=='404'){
+                        ElMessage.error(res.data.srcData);
+                    }else{
+                        ElMessage.success(`修改 ${rowData.typeName} [标签]成功`);
+                        tableData.value[idx].typeName = form.name;
+                    }
+                    idx= -1;
+                })
+            };
+
+            return {
+                addVisible,
+                handleAdd,
+                saveAdd,
+                query,
+                tableData,
+                pageTotal,
+                editVisible,
+                form,
+                handleSearch,
+                handlePageChange,
+                handleDelete,
+                handleEdit,
+                saveEdit,
+            };
+        },
+    };
 </script>
 
 <style scoped>
-.handle-box {
-    margin-bottom: 20px;
-}
+    .handle-box {
+        margin-bottom: 20px;
+    }
 
-.handle-select {
-    width: 120px;
-}
+    .handle-select {
+        width: 120px;
+    }
 
-.handle-input {
-    width: 300px;
-    display: inline-block;
-}
-.table {
-    width: 100%;
-    font-size: 14px;
-}
-.red {
-    color: #ff0000;
-}
-.mr10 {
-    margin-right: 10px;
-}
-.table-td-thumb {
-    display: block;
-    margin: auto;
-    width: 40px;
-    height: 40px;
-}
+    .handle-input {
+        width: 300px;
+        display: inline-block;
+    }
+    .table {
+        width: 100%;
+        font-size: 14px;
+    }
+    .red {
+        color: #ff0000;
+    }
+    .mr10 {
+        margin-right: 10px;
+    }
+    .table-td-thumb {
+        display: block;
+        margin: auto;
+        width: 40px;
+        height: 40px;
+    }
+    #addBtn{
+        float: right;
+    }
 </style>
