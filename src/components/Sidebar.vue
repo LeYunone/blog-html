@@ -59,6 +59,11 @@ export default {
                 ],
             },
             {
+                icon: "el-icon-lx-calendar",
+                index: "/markdown",
+                title: "发布博客",
+            },
+            {
                 icon: "el-icon-lx-copy",
                 index: "/tabs",
                 title: "tab选项卡",
@@ -97,11 +102,6 @@ export default {
                 icon: "el-icon-pie-chart",
                 index: "/webdata",
                 title: "网站数据",
-            },
-            {
-                icon: "el-icon-lx-calendar",
-                index: "/markdown",
-                title: "发布博客",
             },
             {
                 icon: "el-icon-lx-global",
