@@ -70,6 +70,11 @@
         <!-- 添加弹出框 -->
         <el-dialog title="添加" v-model="addVisible" width="30%">
             <el-form label-width="70px">
+                <el-form-item label="分类导航">
+                    <el-select v-model="form.typeValue" placeholder="请选择分类导航">
+                        <el-option v-for="item in form.typeNav" :key="item.id" :label="item.typeNavName" :value="item.id"/>
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="分类名">
                     <el-input v-model="form.addName"></el-input>
                 </el-form-item>
@@ -90,6 +95,10 @@
     import axios from "axios";
     export default {
         name: "typetable",
+        data() {
+            return {
+            };
+        },
         setup() {
             const query = reactive({
                 name: "",
@@ -151,12 +160,20 @@
             const editVisible = ref(false);
             let form = reactive({
                 name: "",
-                addName:""
+                addName:"",
+                typeNav:[],
+                typeValue:""
             });
             let idx = -1;
 
             const handleAdd = () => {
                 addVisible.value = true;
+                axios({
+                    url:"/leyuna/tagType/getTypeNav",
+                    method:'GET'
+                }).then((res) => {
+                    form.typeNav=res.data.listData;
+                })
             };
             const saveAdd = () => {
                 addVisible.value = false;
@@ -164,7 +181,8 @@
                     url:'/leyuna/tagType/addTagsAndTypes',
                     method:'post',
                     params: {
-                        types:form.addName
+                        types:form.addName,
+                        typeNav:form.typeValue
                     }
                 }).then((res)=>{
                     if(res.data.code=='404'){
