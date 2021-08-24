@@ -56,6 +56,10 @@ export default {
                         index: "/type",
                         title: "分类管理",
                     },
+                    {
+                        index: "/typeNav",
+                        title: "分类导航",
+                    },
                 ],
             },
             {

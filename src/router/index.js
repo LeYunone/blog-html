@@ -136,6 +136,13 @@ const routes = [
                     title: '分类管理'
                 },
                 component : () => import("../views/TypeTable.vue")
+            },{
+                path: '/typeNav',
+                name: 'typeNav',
+                meta:{
+                    title: '分类导航'
+                },
+                component : () => import("../views/TypeNavTable.vue")
             }
         ]
     }, {

@@ -3,14 +3,14 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item>
-                    <i class="el-icon-lx-tag"></i> 分类管理
+                    <i class="el-icon-lx-tag"></i> 导航管理
                 </el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
             <!--搜索-->
             <div class="handle-box">
-                <el-input v-model="query.name" placeholder="分类名" class="handle-input mr10"></el-input>
+                <el-input v-model="query.name" placeholder="导航名" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
                 <el-button type="success" @click="handleAdd()" id="addBtn" icon="el-icon-roundadd">添加</el-button>
             </div>
@@ -19,23 +19,8 @@
                 <el-table-column prop="id" label="ID" width="55" align="center">
                     <template #default="scope">{{scope.row.id}}</template>
                 </el-table-column>
-                <el-table-column prop="typeName" label="分类名">
-                    <template #default="scope">{{scope.row.typeName}}</template>
-                </el-table-column>
-                <el-table-column label="使用次数">
-                    <template #default="scope">{{ scope.row.useCount}}</template>
-                </el-table-column>
-                <el-table-column label="状态" align="center">
-                    <template #default="scope">
-                        <el-tag  :type="
-                                scope.row.userStatus === 'hot'
-                                    ? 'success' : 'danger'
-                            ">{{ scope.row.userStatus }}</el-tag>
-                    </template>
-                </el-table-column>
-
-                <el-table-column prop="date" label="创建时间">
-                    <template #default="scope">{{ scope.row.createTime}}</template>
+                <el-table-column prop="typeNavName" label="导航名">
+                    <template #default="scope">{{scope.row.typeNavName}}</template>
                 </el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template #default="scope">
@@ -46,16 +31,12 @@
                     </template>
                 </el-table-column>
             </el-table>
-            <div class="pagination">
-                <el-pagination background layout="total, prev, pager, next" :current-page="query.pageIndex"
-                               :page-size="query.pageSize" :total="pageTotal" @current-change="handlePageChange"></el-pagination>
-            </div>
         </div>
 
         <!-- 编辑弹出框 -->
         <el-dialog title="编辑" v-model="editVisible" width="30%">
             <el-form label-width="70px">
-                <el-form-item label="分类名">
+                <el-form-item label="导航名">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
             </el-form>
@@ -70,12 +51,7 @@
         <!-- 添加弹出框 -->
         <el-dialog title="添加" v-model="addVisible" width="30%">
             <el-form label-width="70px">
-                <el-form-item label="分类导航">
-                    <el-select v-model="form.typeValue" placeholder="请选择分类导航">
-                        <el-option v-for="item in form.typeNav" :key="item.id" :label="item.typeNavName" :value="item.id"/>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="分类名">
+                <el-form-item label="导航名">
                     <el-input v-model="form.addName"></el-input>
                 </el-form-item>
             </el-form>
@@ -102,24 +78,18 @@
         setup() {
             const query = reactive({
                 name: "",
-                pageIndex: 1,
-                pageSize: 10,
             });
             const tableData = ref([]);
-            const pageTotal = ref(0);
             // 获取表格数据
             const getData = () => {
                 axios({
                     method:'get',
-                    url: '/leyuna/tagType/types',
+                    url: '/leyuna/tagType/getTypeNav',
                     params: {
-                        pageIndex: query.pageIndex,
-                        pageSize: query.pageSize,
                         conditionName: query.name
                     }
                 }).then((res) =>{
                     tableData.value = res.data.listData;
-                    pageTotal.value=res.data.page.total || 50
                 })
             };
             getData();
@@ -162,7 +132,6 @@
                 name: "",
                 addName:"",
                 typeNav:[],
-                typeValue:""
             });
             let idx = -1;
 
@@ -178,11 +147,10 @@
             const saveAdd = () => {
                 addVisible.value = false;
                 axios({
-                    url:'/leyuna/tagType/addTagsAndTypes',
+                    url:'/leyuna/tagType/addTypeNav',
                     method:'post',
                     params: {
-                        types:form.addName,
-                        typeNav:form.typeValue
+                        typeNavName:form.addName,
                     }
                 }).then((res)=>{
                     if(res.data.code=='404'){
@@ -197,25 +165,25 @@
 
             const handleEdit = (index, row) => {
                 idx = index;
-                form.name=row.typeName;
+                form.name=row.typeNavName;
                 editVisible.value = true;
             };
             const saveEdit = () => {
                 editVisible.value = false;
                 var rowData=tableData.value[idx];
                 axios({
-                    url:'/leyuna/tagType/updateType',
+                    url:'/leyuna/tagType/updateTypeNav',
                     method:'post',
                     params: {
-                        id:rowData.id,
-                        typeName:form.name
+                        typeNavId:rowData.id,
+                        typeNavName:form.name
                     }
                 }).then((res)=>{
                     if(res.data.code=='404'){
                         ElMessage.error(res.data.srcData);
                     }else{
-                        ElMessage.success(`修改 ${rowData.typeName} [分类]成功`);
-                        tableData.value[idx].typeName = form.name;
+                        ElMessage.success(`修改 ${rowData.typeNavName} [分类导航]成功`);
+                        tableData.value[idx].typeNavName = form.name;
                     }
                     idx= -1;
                 })
@@ -227,7 +195,6 @@
                 saveAdd,
                 query,
                 tableData,
-                pageTotal,
                 editVisible,
                 form,
                 handleSearch,
