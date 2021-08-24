@@ -38,10 +38,15 @@
                     </el-input>
                     <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
                 </el-form-item>
+
                 <el-form-item label="文章分类" :label-width="formLabelWidth">
-                    <el-select v-model="temp.type" placeholder="请选择活动区域">
-                        <el-option v-for="item in types" :key="item.id" :label="item.typeName" :value="item.id"/>
-                    </el-select>
+                    <el-cascader
+                            v-model="temp.type"
+                            :emitPath=false
+                            :options="options"
+                            :props="{ expandTrigger: 'hover' }"
+                            :show-all-levels=false
+                            ></el-cascader>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -67,7 +72,7 @@
                 temp:{
                     text: "",
                     title:"",
-                    type:"",
+                    type:[],
                 },
             };
         },
@@ -110,7 +115,7 @@
                     method:"post",
                     data:{
                         "blogContent":html,
-                        "type":this.temp.type,
+                        "type":this.temp.type[1],
                         "tags":this.dynamicTags,
                         "title":this.temp.title
                     }
@@ -130,20 +135,20 @@
 
 
         setup(){
-            let types = ref([]);
             let dialogFormVisible=ref(false);
+            let options=ref([]);
             const openDia = () =>{
                 axios({
-                    url:"/leyuna/tagType/types",
+                    url:"/leyuna/tagType/getTypeInNav",
                 }).then((res)=>{
-                    types.value=res.data.page.records;
+                    options.value=res.data.listData;
                     dialogFormVisible.value=true;
                 })
             };
             return {
+                options,
                 openDia,
                 dialogFormVisible,
-                types,
             }
         }
     }

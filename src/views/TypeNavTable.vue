@@ -112,10 +112,10 @@
                     type: "warning",
                 }).then(() => {
                     axios({
-                        url:"/leyuna/tagType/deleteTagsAndTypes",
-                        method:'GET',
+                        url:"/leyuna/tagType/deleteTypeNav",
+                        method:'POST',
                         params:{
-                            types:tableData.value[index].id
+                            typeNavId:tableData.value[index].id
                         }
                     }).then(() =>{
                         ElMessage.success("删除成功");
