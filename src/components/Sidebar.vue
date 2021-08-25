@@ -68,6 +68,11 @@ export default {
                 title: "发布博客",
             },
             {
+                icon: "el-icon-lx-calendar",
+                index: "/blogTable",
+                title: "博客管理",
+            },
+            {
                 icon: "el-icon-lx-copy",
                 index: "/tabs",
                 title: "tab选项卡",

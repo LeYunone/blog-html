@@ -143,6 +143,13 @@ const routes = [
                     title: '分类导航'
                 },
                 component : () => import("../views/TypeNavTable.vue")
+            },{
+                path: '/blogTable',
+                name: 'blogTable',
+                meta:{
+                    title: '博客管理'
+                },
+                component : () => import("../views/BlogTable.vue")
             }
         ]
     }, {
@@ -152,6 +159,13 @@ const routes = [
             title: '登录'
         },
         component: () => import ( /* webpackChunkName: "login" */ "../views/Login.vue")
+    },{
+        path: "/blogEdit",
+        name: "blogEdit",
+        meta: {
+            title: '博客修改页面'
+        },
+        component: () => import ( /* webpackChunkName: "login" */ "../views/BlogEdit.vue")
     }
 ];
 

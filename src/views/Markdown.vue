@@ -109,12 +109,12 @@
             },
 
             submit() {
-                const html = xss.process(VueMarkdownEditor.vMdParser.themeConfig.markdownParser.render(this.temp.text));
+                // const html = xss.process(VueMarkdownEditor.vMdParser.themeConfig.markdownParser.render(this.temp.text));
                 axios({
                     url:"/leyuna/blog/addBlog",
                     method:"post",
                     data:{
-                        "blogContent":html,
+                        "blogContent":this.temp.text,
                         "type":this.temp.type[1],
                         "tags":this.dynamicTags,
                         "title":this.temp.title
