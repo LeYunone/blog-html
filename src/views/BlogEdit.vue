@@ -18,7 +18,7 @@
             <div class="plugins-tips">
                 {{remarks}}
             </div>
-            <el-button style="float:right;" @click="editVisible = true" plain> - 保存 - </el-button>
+            <el-button @click="editVisible = true" plain> - 保存 - </el-button>
         </div>
     </div>
 
@@ -68,10 +68,16 @@ export default {
                 data:{
                     "title":this.title,
                     "blogContent":this.blogContent,
-                    "remarks":this.remarks
+                    "remarks":this.remarks,
+                    "id":blogId,
                 }
             }).then((res) =>{
-
+                if(res.data.code=='404'){
+                    ElMessage.error(res.data.srcData);
+                }else{
+                    ElMessage.success('发布成功');
+                }
+                this.$router.push({path:'blogIndex/blog',query:{blogId:blogId}});
             })
         },
         thisBlog(){
