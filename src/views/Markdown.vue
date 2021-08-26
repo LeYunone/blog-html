@@ -6,11 +6,23 @@
             <div id="main">
                 <v-md-editor v-model="temp.text" height="710px" disabled-menus="[]" @upload-image="handleUploadImage"></v-md-editor>
             </div>
-            <el-button class="editor-btn" type="primary" @click="openDia">提交</el-button>
+            <el-button class="editor-btn" type="primary" @click="openDia">提交文章</el-button>
+            <el-button class="editor-btn" type="primary" @click="addNotice=true">发布网站公告</el-button>
         </div>
 
+        <el-dialog title="添加" v-model="addNotice">
+            <el-form :model="temp">
+                <el-form-item label="文章标题" :label-width="formLabelWidth">
+                    <el-input v-model="temp.title" autocomplete="off" ></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="addNotice = false">取 消</el-button>
+                <el-button type="primary" @click="submitNotice">确 定</el-button>
+            </div>
+        </el-dialog>
 
-        <el-dialog title="选择分类和标签" v-model="dialogFormVisible">
+        <el-dialog title="添加" v-model="dialogFormVisible">
             <el-form :model="temp">
 
                 <el-form-item label="文章标题" :label-width="formLabelWidth">
@@ -74,9 +86,31 @@
                     title:"",
                     type:[],
                 },
+                addNotice:false,
             };
         },
         methods: {
+            submitNotice(){
+                axios({
+                    url:"/leyuna/blog/addWebNotice",
+                    method : "POST",
+                    data:{
+                        title:this.temp.title,
+                        content:this.temp.text,
+                        type:0,
+                    }
+                }).then((res)=>{
+                    if(res.data.code=='404'){
+                        ElMessage.error(res.data.srcData);
+                    }else{
+                        ElMessage.success('发布成功');
+                    }
+                    this.$router.replace({
+                        path:'/dashboard',
+                        name: "dashboard"
+                    })
+                })
+            },
             handleInputConfirm() {
                 let inputValue = this.inputValue;
                 if (inputValue) {

@@ -25,10 +25,10 @@
     <!-- 编辑弹出框 -->
     <el-dialog title="编辑" v-model="editVisible" width="30%">
         <el-form label-width="70px">
-            <el-form-item label="标题">
+            <el-form-item label="标题:">
                 <el-input v-model="title"></el-input>
             </el-form-item>
-            <el-form-item label="前言/备注/tip">
+            <el-form-item label="前言:">
                 <el-input v-model="remarks"></el-input>
             </el-form-item>
         </el-form>
