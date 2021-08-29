@@ -4,7 +4,7 @@
         </div>
         <div class="container">
             <div id="main">
-                <v-md-editor v-model="temp.text" height="710px" disabled-menus="[]" @upload-image="handleUploadImage"></v-md-editor>
+                <v-md-editor v-model="temp.text" :include-level="[1,2,3,4]" height="710px" disabled-menus="[]" @upload-image="handleUploadImage"></v-md-editor>
             </div>
             <el-button class="editor-btn" type="primary" @click="openDia">提交文章</el-button>
             <el-button class="editor-btn" type="primary" @click="addNotice=true">发布网站公告</el-button>
@@ -27,6 +27,9 @@
 
                 <el-form-item label="文章标题" :label-width="formLabelWidth">
                     <el-input v-model="temp.title" autocomplete="off" ></el-input>
+                </el-form-item>
+                <el-form-item label="前言" :label-width="formLabelWidth">
+                    <el-input :rows="6" type="textarea" v-model="temp.remarks" autocomplete="off" ></el-input>
                 </el-form-item>
 
                 <el-form-item label="文章标签" :label-width="formLabelWidth">
@@ -85,11 +88,15 @@
                     text: "",
                     title:"",
                     type:[],
+                    remarks:""
                 },
                 addNotice:false,
             };
         },
         methods: {
+            preText (pretext) {
+                return pretext.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
+            },
             submitNotice(){
                 axios({
                     url:"/leyuna/blog/addWebNotice",
@@ -151,7 +158,8 @@
                         "blogContent":this.temp.text,
                         "type":this.temp.type[1],
                         "tags":this.dynamicTags,
-                        "title":this.temp.title
+                        "title":this.temp.title,
+                        "remarks":this.preText(this.temp.remarks),
                     }
                 }).then((res) => {
                     if(res.data.code=='404'){

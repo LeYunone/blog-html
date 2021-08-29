@@ -29,7 +29,7 @@
                 <el-input v-model="title"></el-input>
             </el-form-item>
             <el-form-item label="前言:">
-                <el-input v-model="remarks"></el-input>
+                <el-input :rows="6" type="textarea" v-model="remarks"></el-input>
             </el-form-item>
         </el-form>
         <template #footer>
@@ -60,6 +60,9 @@ export default {
         this.thisBlog();//需要触发的函数
     },
     methods: {
+        preText (pretext) {
+            return pretext.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
+        },
         saveEdit(){
             const blogId = this.$route.query.blogId;
             axios({
@@ -68,7 +71,7 @@ export default {
                 data:{
                     "title":this.title,
                     "blogContent":this.blogContent,
-                    "remarks":this.remarks,
+                    "remarks":this.preText(this.remarks),
                     "id":blogId,
                 }
             }).then((res) =>{
