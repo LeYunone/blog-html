@@ -9,14 +9,13 @@
             </el-breadcrumb>
         </div>
         <div class="el-main">
-            <div class="plugins-tips">
-                {{remarks}}
+            <div v-html="remarks" class="plugins-tips">
             </div>
             <div class="blogCss">
                 <v-md-editor :include-level="[1,2,3,4]" v-model="blogContent" height="710px" disabled-menus="[]" @upload-image="handleUploadImage"></v-md-editor>
             </div>
-            <div class="plugins-tips">
-                {{remarks}}
+            <div v-html="remarks" class="plugins-tips">
+
             </div>
             <el-button @click="editVisible = true" plain> - 保存 - </el-button>
         </div>
