@@ -107,10 +107,10 @@
                         type:0,
                     }
                 }).then((res)=>{
-                    if(res.data.code=='404'){
-                        ElMessage.error(res.data.srcData);
-                    }else{
+                    if(res.data.code=='200'){
                         ElMessage.success('发布成功');
+                    }else{
+                        ElMessage.error(res.data.srcData);
                     }
                     this.$router.replace({
                         path:'/dashboard',
@@ -139,24 +139,27 @@
             handleUploadImage(event, insertImage, files) {
                 // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
                 let file=files[0];
-                // console.log(files[0])
-                console.log(file.name+"==="+file.size);
+                console.log(files[0])
+                let formData = new FormData();
+                formData.append('file',files[0]);
+                // console.log(file.name+"==="+file.size);
                 axios({
                     url:"/leyuna/server/updownimg",
                     method:"POST",
-                    data: {
-                        name:file.name,
-                        size:file.size
-                    }
+                    data:formData
                 }).then((res) => {
+                    if(res.data.code=='200'){
+                        insertImage({
+                            url:
+                                'https://leyuna.xyz/img/'+res.data.srcData,
+                            desc: files[0].name,
+                            width: 'auto',
+                            height: 'auto',
+                        });
+                    }else{
+                        ElMessage.error(res.data.srcData);
+                    }
                     // 此处只做示例
-                    insertImage({
-                        url:
-                            'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1269952892,3525182336&fm=26&gp=0.jpg',
-                        desc: '七龙珠',
-                        // width: 'auto',
-                        // height: 'auto',
-                    });
                 })
             },
 
@@ -173,10 +176,10 @@
                         "remarks":this.preText(this.temp.remarks),
                     }
                 }).then((res) => {
-                    if(res.data.code=='404'){
-                        ElMessage.error(res.data.srcData);
-                    }else{
+                    if(res.data.code=='200'){
                         ElMessage.success('发布成功');
+                    }else{
+                        ElMessage.error(res.data.srcData);
                     }
                     this.$router.replace({
                         path:'/dashboard',

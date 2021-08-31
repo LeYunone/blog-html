@@ -4,14 +4,14 @@
             <div class="ms-title">后台管理系统</div>
             <el-form :model="param" :rules="rules" ref="login" label-width="0px" class="ms-content">
                 <el-form-item prop="username">
-                    <el-input v-model="param.username" placeholder="username">
+                    <el-input v-model="param.userName" placeholder="username">
                         <template #prepend>
                             <el-button icon="el-icon-user"></el-button>
                         </template>
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                    <el-input type="password" placeholder="password" v-model="param.password"
+                    <el-input type="password" placeholder="password" v-model="param.passWord"
                         @keyup.enter="submitForm()">
                         <template #prepend>
                             <el-button icon="el-icon-lock"></el-button>
@@ -32,13 +32,15 @@ import { ref, reactive } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import axios from 'axios';
 
 export default {
+
     setup() {
         const router = useRouter();
         const param = reactive({
-            username: "admin",
-            password: "123123",
+            userName: "",
+            passWord: "",
         });
 
         const rules = {
@@ -55,16 +57,22 @@ export default {
         };
         const login = ref(null);
         const submitForm = () => {
-            login.value.validate((valid) => {
-                if (valid) {
-                    ElMessage.success("登录成功");
-                    localStorage.setItem("ms_username", param.username);
-                    router.push("/");
-                } else {
-                    ElMessage.error("登录成功");
-                    return false;
+            axios({
+                url:"/leyuna/user/login",
+                method:"POST",
+                data:{
+                    "userName":param.userName,
+                    "passWord":param.passWord
                 }
-            });
+            }).then((res) => {
+                console.log(param.passWord+"="+param.userName)
+                if(res.data.code=='200'){
+                    ElMessage.success("登录成功");
+                    router.push("/dashboard");
+                }else{
+                    ElMessage.error(res.data.srcData);
+                }
+            })
         };
 
         const store = useStore();

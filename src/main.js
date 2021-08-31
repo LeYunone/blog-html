@@ -25,7 +25,6 @@ VueMarkdownEditor.use(vuepressTheme, {
         // md.set(option).use(plugin);
     },
 });
-import axios from 'axios';
 const app = createApp(App)
 app.use(VMdEditor);
 

@@ -153,11 +153,11 @@
                         typeNavName:form.addName,
                     }
                 }).then((res)=>{
-                    if(res.data.code=='404'){
-                        ElMessage.error(res.data.srcData);
-                    }else{
+                    if(res.data.code=='200'){
                         ElMessage.success('添加成功');
                         getData();
+                    }else{
+                        ElMessage.error(res.data.srcData);
                     }
                     idx= -1;
                 })
@@ -179,11 +179,11 @@
                         typeNavName:form.name
                     }
                 }).then((res)=>{
-                    if(res.data.code=='404'){
-                        ElMessage.error(res.data.srcData);
-                    }else{
+                    if(res.data.code=='200'){
                         ElMessage.success(`修改 ${rowData.typeNavName} [分类导航]成功`);
                         tableData.value[idx].typeNavName = form.name;
+                    }else{
+                        ElMessage.error(res.data.srcData);
                     }
                     idx= -1;
                 })

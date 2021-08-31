@@ -13,7 +13,7 @@ export default defineConfig({
     publicDir:'public',
     server: {
         host: 'localhost',
-        port: 8000,
+        port: 8888,
         open: true,
         strictPort: false,
         https: false,

@@ -74,10 +74,10 @@ export default {
                     "id":blogId,
                 }
             }).then((res) =>{
-                if(res.data.code=='404'){
-                    ElMessage.error(res.data.srcData);
-                }else{
+                if(res.data.code=='200'){
                     ElMessage.success('发布成功');
+                }else{
+                    ElMessage.error(res.data.srcData);
                 }
                 this.$router.push({path:'blogIndex/blog',query:{blogId:blogId}});
             })
