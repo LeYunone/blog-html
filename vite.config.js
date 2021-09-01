@@ -11,6 +11,7 @@ export default defineConfig({
     },
     plugins: [vue()],
     publicDir:'public',
+    baseUrl: './',
     server: {
         host: 'localhost',
         port: 8888,
@@ -21,7 +22,10 @@ export default defineConfig({
           '/leyuna': {
                 target: 'http://127.0.0.1:9000',
                 changeOrigin: true,
-                secure: false
+                secure: false,
+                pathRewrite:{
+                    '/leyuna':""
+                }
           },
           '/blogIndex':{
               target: 'http://127.0.0.1:8001',
