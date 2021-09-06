@@ -151,7 +151,7 @@
                     if(res.data.code=='200'){
                         insertImage({
                             url:
-                                'https://leyuna.xyz/img/'+res.data.srcData,
+                                'http://114.132.218.2:8080/image/'+res.data.srcData,
                             desc: files[0].name,
                             width: 'auto',
                             height: 'auto',
