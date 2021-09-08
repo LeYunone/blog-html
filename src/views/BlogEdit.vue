@@ -59,6 +59,32 @@ export default {
         this.thisBlog();//需要触发的函数
     },
     methods: {
+        handleUploadImage(event, insertImage, files) {
+            // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
+            let file=files[0];
+            console.log(files[0])
+            let formData = new FormData();
+            formData.append('file',files[0]);
+            // console.log(file.name+"==="+file.size);
+            axios({
+                url:"/leyuna/server/updownimg",
+                method:"POST",
+                data:formData
+            }).then((res) => {
+                if(res.data.code=='200'){
+                    insertImage({
+                        url:
+                            'http://114.132.218.2:8080/image/'+res.data.srcData,
+                        desc: files[0].name,
+                        width: 'auto',
+                        height: 'auto',
+                    });
+                }else{
+                    ElMessage.error(res.data.srcData);
+                }
+                // 此处只做示例
+            })
+        },
         preText (pretext) {
             return pretext.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
         },
