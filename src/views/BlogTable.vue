@@ -12,7 +12,7 @@
             <div class="handle-box">
                 <el-input v-model="query.name" placeholder="文章名" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
-                <el-button type="success"  id="addBtn" icon="el-icon-roundadd">添加</el-button>
+                <el-button type="success" @click="createDocument"  id="addBtn" icon="el-icon-roundadd">构建索引库</el-button>
             </div>
 
             <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
@@ -60,6 +60,18 @@ export default {
             const { href }=this.$router.resolve({path:'/blogEdit',query:{blogId:row.id}});
             window.open(href, '_blank');
         },
+        createDocument(){
+            axios({
+                url:"/leyuna/blog/createDocument",
+                method:"POST"
+            }).then((res) => {
+                if(res.data.code=='200'){
+                    ElMessage.success('创建成功');
+                }else{
+                    ElMessage.error(res.data.srcData);
+                }
+            })
+        }
     },
     setup() {
         const query = reactive({
