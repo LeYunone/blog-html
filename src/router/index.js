@@ -136,6 +136,13 @@ const routes = [
                     title: '博客管理'
                 },
                 component : () => import("../views/BlogTable.vue")
+            },{
+                path: '/noticeTable',
+                name: 'noticeTable',
+                meta:{
+                    title: '公告管理'
+                },
+                component : () => import("../views/NoticeTable.vue")
             }
         ]
     }, {
@@ -152,6 +159,13 @@ const routes = [
             title: '博客修改页面'
         },
         component: () => import ( /* webpackChunkName: "login" */ "../views/BlogEdit.vue")
+    },{
+        path: "/noticeEdit",
+        name: "noticeEdit",
+        meta: {
+            title: '公告修改页面'
+        },
+        component: () => import ( /* webpackChunkName: "login" */ "../views/NoticeEdit.vue")
     }
 ];
 

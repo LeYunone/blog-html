@@ -73,6 +73,11 @@ export default {
                 title: "博客管理",
             },
             {
+                icon: "el-icon-lx-calendar",
+                index: "/noticeTable",
+                title: "公告管理",
+            },
+            {
                 icon: "el-icon-lx-copy",
                 index: "/tabs",
                 title: "tab选项卡",
