@@ -74,7 +74,7 @@ export default {
                 if(res.data.code=='200'){
                     insertImage({
                         url:
-                            'http://114.132.218.2:8080/image/'+res.data.srcData,
+                            'https://www.leyuna.xyz/image/'+res.data.srcData,
                         desc: files[0].name,
                         width: 'auto',
                         height: 'auto',
