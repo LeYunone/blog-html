@@ -139,7 +139,6 @@
             handleUploadImage(event, insertImage, files) {
                 // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
                 let file=files[0];
-                console.log(files[0])
                 let formData = new FormData();
                 formData.append('file',files[0]);
                 // console.log(file.name+"==="+file.size);
