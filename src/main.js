@@ -39,6 +39,8 @@ import 'codemirror/addon/scroll/simplescrollbars';
 import 'codemirror/addon/scroll/simplescrollbars.css';
 // style
 import 'codemirror/lib/codemirror.css';
+import createAlignPlugin from '@kangc/v-md-editor/lib/plugins/align';
+
 
 VMdEditor.Codemirror = Codemirror;
 VMdEditor.use(githubTheme, {
@@ -52,6 +54,7 @@ VueMarkdownEditor.use(vuepressTheme, {
     },
 });
 VueMarkdownEditor.use(createTodoListPlugin());
+VueMarkdownEditor.use(createAlignPlugin());
 const app = createApp(App)
 app.use(VMdEditor);
 
