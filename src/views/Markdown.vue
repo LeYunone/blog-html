@@ -107,10 +107,10 @@
                         type:0,
                     }
                 }).then((res)=>{
-                    if(res.data.code=='200'){
+                    if(res.data.status){
                         ElMessage.success('发布成功');
                     }else{
-                        ElMessage.error(res.data.srcData);
+                        ElMessage.error(res.data.message);
                     }
                     this.$router.replace({
                         path:'/dashboard',
@@ -147,16 +147,16 @@
                     method:"POST",
                     data:formData
                 }).then((res) => {
-                    if(res.data.code=='200'){
+                    if(res.data.status){
                         insertImage({
                             url:
-                                'https://www.leyuna.xyz/image/'+res.data.srcData,
+                                'https://www.leyuna.xyz/image/'+res.data.data,
                             desc: files[0].name,
                             width: 'auto',
                             height: 'auto',
                         });
                     }else{
-                        ElMessage.error(res.data.srcData);
+                        ElMessage.error(res.data.message);
                     }
                     // 此处只做示例
                 })
@@ -175,10 +175,10 @@
                         "remarks":this.preText(this.temp.remarks),
                     }
                 }).then((res) => {
-                    if(res.data.code=='200'){
+                    if(res.data.status){
                         ElMessage.success('发布成功');
                     }else{
-                        ElMessage.error(res.data.srcData);
+                        ElMessage.error(res.data.message);
                     }
                     this.$router.replace({
                         path:'/dashboard',
@@ -196,7 +196,7 @@
                 axios({
                     url:"/leyuna/tagType/getTypeInNav",
                 }).then((res)=>{
-                    options.value=res.data.listData;
+                    options.value=res.data.data;
                     dialogFormVisible.value=true;
                 })
             };

@@ -109,7 +109,7 @@ export default {
                     conditionName: query.name
                 }
             }).then((res) =>{
-                tableData.value = res.data.listData;
+                tableData.value = res.data.data.records;
                 pageTotal.value=res.data.page.total || 50
             })
         };
@@ -140,7 +140,7 @@ export default {
                     }
                 }).then((res) =>{
                     console.log(res)
-                    if(res.data.code=='200'){
+                    if(res.data.status){
                         ElMessage.success("删除成功");
                     }else{
                         ElMessage.error("刪除失敗");
@@ -172,11 +172,11 @@ export default {
                     tags:form.addName
                 }
             }).then((res)=>{
-                if(res.data.code=='200'){
+                if(res.data.status){
                     ElMessage.success('添加成功');
                     getData();
                 }else{
-                    ElMessage.error(res.data.srcData);
+                    ElMessage.error(res.data.message);
                 }
                 idx= -1;
             })
@@ -198,11 +198,11 @@ export default {
                     tagName:form.name
                 }
             }).then((res)=>{
-                if(res.data.code=='200'){
+                if(res.data.status){
                     ElMessage.success(`修改 ${rowData.tagName} [标签]成功`);
                     tableData.value[idx].tagName = form.name;
                 }else{
-                    ElMessage.error(res.data.srcData);
+                    ElMessage.error(res.data.message);
                 }
                 idx= -1;
             })

@@ -71,16 +71,16 @@ export default {
                 method:"POST",
                 data:formData
             }).then((res) => {
-                if(res.data.code=='200'){
+                if(res.data.status){
                     insertImage({
                         url:
-                            'https://www.leyuna.xyz/image/'+res.data.srcData,
+                            'https://www.leyuna.xyz/image/'+res.data.data,
                         desc: files[0].name,
                         width: 'auto',
                         height: 'auto',
                     });
                 }else{
-                    ElMessage.error(res.data.srcData);
+                    ElMessage.error(res.data.message);
                 }
                 // 此处只做示例
             })
@@ -100,10 +100,10 @@ export default {
                     "id":blogId,
                 }
             }).then((res) =>{
-                if(res.data.code=='200'){
+                if(res.data.status){
                     ElMessage.success('发布成功');
                 }else{
-                    ElMessage.error(res.data.srcData);
+                    ElMessage.error(res.data.message);
                 }
                 this.$router.push({path:'blogIndex/blog',query:{blogId:blogId}});
             })
@@ -114,9 +114,9 @@ export default {
                 url:"/leyuna/blog/blog/"+blogId,
                 method:"GET",
             }).then((res) =>{
-                this.title=res.data.objData.title;
-                this.blogContent=res.data.objData.blogContent;
-                this.remarks=res.data.objData.remarks;
+                this.title=res.data.data.title;
+                this.blogContent=res.data.data.blogContent;
+                this.remarks=res.data.data.remarks;
             })
         },
     },

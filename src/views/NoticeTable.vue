@@ -71,8 +71,8 @@ export default {
                     conditionName: query.name
                 }
             }).then((res) =>{
-                tableData.value = res.data.page.records;
-                pageTotal.value=res.data.page.total || 50
+                tableData.value = res.data.data.records;
+                pageTotal.value=res.data.data.total || 50
             })
         };
         getData();

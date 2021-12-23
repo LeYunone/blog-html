@@ -65,10 +65,10 @@ export default {
                 url:"/leyuna/blog/createDocument",
                 method:"POST"
             }).then((res) => {
-                if(res.data.code=='200'){
+                if(res.data.status){
                     ElMessage.success('创建成功');
                 }else{
-                    ElMessage.error(res.data.srcData);
+                    ElMessage.error(res.data.message);
                 }
             })
         }
@@ -92,8 +92,8 @@ export default {
                     conditionName: query.name
                 }
             }).then((res) =>{
-                tableData.value = res.data.page.records;
-                pageTotal.value=res.data.page.total || 50
+                tableData.value = res.data.data.records;
+                pageTotal.value=res.data.data.total || 50
             })
         };
         getData();

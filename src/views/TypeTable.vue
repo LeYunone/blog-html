@@ -118,7 +118,7 @@
                         conditionName: query.name
                     }
                 }).then((res) =>{
-                    tableData.value = res.data.listData;
+                    tableData.value = res.data.data.records;
                     pageTotal.value=res.data.page.total || 50
                 })
             };
@@ -172,7 +172,7 @@
                     url:"/leyuna/tagType/getTypeNav",
                     method:'GET'
                 }).then((res) => {
-                    form.typeNav=res.data.listData;
+                    form.typeNav=res.data.data;
                 })
             };
             const saveAdd = () => {
@@ -185,11 +185,11 @@
                         typeNav:form.typeValue
                     }
                 }).then((res)=>{
-                    if(res.data.code=='200'){
+                    if(res.data.status){
                         ElMessage.success('添加成功');
                         getData();
                     }else{
-                        ElMessage.error(res.data.srcData);
+                        ElMessage.error(res.data.message);
                     }
                     idx= -1;
                 })
@@ -211,11 +211,11 @@
                         typeName:form.name
                     }
                 }).then((res)=>{
-                    if(res.data.code=='200'){
+                    if(res.data.status){
                         ElMessage.success(`修改 ${rowData.typeName} [分类]成功`);
                         tableData.value[idx].typeName = form.name;
                     }else{
-                        ElMessage.error(res.data.srcData);
+                        ElMessage.error(res.data.message);
                     }
                     idx= -1;
                 })

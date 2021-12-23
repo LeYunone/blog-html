@@ -62,16 +62,16 @@ export default {
                 method:"POST",
                 data:formData
             }).then((res) => {
-                if(res.data.code=='200'){
+                if(res.data.status){
                     insertImage({
                         url:
-                            'https://www.leyuna.xyz/image/'+res.data.srcData,
+                            'https://www.leyuna.xyz/image/'+res.data.data,
                         desc: files[0].name,
                         width: 'auto',
                         height: 'auto',
                     });
                 }else{
-                    ElMessage.error(res.data.srcData);
+                    ElMessage.error(res.data.message);
                 }
                 // 此处只做示例
             })
@@ -88,10 +88,10 @@ export default {
                     "type":0
                 }
             }).then((res) =>{
-                if(res.data.code=='200'){
+                if(res.data.status){
                     ElMessage.success('发布成功');
                 }else{
-                    ElMessage.error(res.data.srcData);
+                    ElMessage.error(res.data.message);
                 }
                 window.close();
             })
@@ -102,8 +102,8 @@ export default {
                 url:"/leyuna/blog/notice/"+noticeId+"/"+0,
                 method:"GET",
             }).then((res) =>{
-                this.title=res.data.objData.title;
-                this.content=res.data.objData.content;
+                this.title=res.data.data.title;
+                this.content=res.data.data.content;
             })
         },
     },

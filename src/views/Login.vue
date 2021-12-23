@@ -66,11 +66,11 @@ export default {
                 }
             }).then((res) => {
                 console.log(param.passWord+"="+param.userName)
-                if(res.data.code=='200'){
+                if(res.data.status){
                     ElMessage.success("登录成功");
                     router.push("/dashboard");
                 }else{
-                    ElMessage.error(res.data.srcData);
+                    ElMessage.error(res.data.message);
                 }
             })
         };
