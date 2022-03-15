@@ -104,13 +104,18 @@ export default {
                 method:'get',
                 url: '/leyuna/tagType/tags',
                 params: {
-                    pageIndex: query.pageIndex,
-                    pageSize: query.pageSize,
+                    index: query.pageIndex,
+                    size: query.pageSize,
                     conditionName: query.name
                 }
             }).then((res) =>{
-                tableData.value = res.data.data.records;
-                pageTotal.value=res.data.page.total || 50
+                var data = res.data;
+                if(data.status){
+                    tableData.value = data.data.records;
+                    pageTotal.value = data.data.total || 50 ;
+                }else{
+                    ElMessage.error(data.message);
+                }
             })
         };
         getData();
@@ -139,11 +144,11 @@ export default {
                         tags:tableData.value[index].id
                     }
                 }).then((res) =>{
-                    console.log(res)
-                    if(res.data.status){
+                    var data = res.data;
+                    if(data.status){
                         ElMessage.success("删除成功");
                     }else{
-                        ElMessage.error("刪除失敗");
+                        ElMessage.error(data.message);
                     }
                     getData();
                 })
@@ -190,12 +195,13 @@ export default {
         const saveEdit = () => {
             editVisible.value = false;
             var rowData=tableData.value[idx];
+            var tag=[];
+            tag.push({id:rowData.id,tagName:form.name})
             axios({
-                url:'/leyuna/tagType/updateTag',
-                method:'post',
+                url:'/leyuna/tagType/updateTagAndTypes',
+                method:'GET',
                 params: {
-                    id:rowData.id,
-                    tagName:form.name
+                    tag:tag
                 }
             }).then((res)=>{
                 if(res.data.status){
