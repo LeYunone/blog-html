@@ -176,11 +176,12 @@ export default {
                     tags:form.addName
                 }
             }).then((res)=>{
-                if(res.data.status){
+                var data = res.data;
+                if(data.status){
                     ElMessage.success('添加成功');
                     getData();
                 }else{
-                    ElMessage.error(res.data.message);
+                    ElMessage.error(data.message);
                 }
                 idx= -1;
             })
@@ -196,18 +197,19 @@ export default {
             var rowData=tableData.value[idx];
             axios({
                 url:'/leyuna/tagType/updateTagAndTypes',
-                method:'POST',
+                method:'GET',
                 params: {
-                    tag:[{
-                        id:rowData.id,tagName:form.name
-                     }]
+                    id:rowData.id,
+                    newName:form.name,
+                    name:"tag"
                 }
             }).then((res)=>{
-                if(res.data.status){
-                    ElMessage.success(`修改 ${rowData.tagName} [标签]成功`);
+                var data = res.data;
+                if(data.status){
+                    ElMessage.success(`修改 [ ${rowData.tagName} ]标签成功`);
                     tableData.value[idx].tagName = form.name;
                 }else{
-                    ElMessage.error(res.data.message);
+                    ElMessage.error(data.message);
                 }
                 idx= -1;
             })
