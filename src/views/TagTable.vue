@@ -16,8 +16,7 @@
             </div>
 
             <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-                <el-table-column prop="id" label="ID" width="55" align="center">
-                    <template #default="scope">{{scope.row.id}}</template>
+                <el-table-column type="index" prop="id" label="ID" width="55" align="center">
                 </el-table-column>
                 <el-table-column prop="tagName" label="标签名">
                     <template #default="scope">{{scope.row.tagName}}</template>
@@ -172,7 +171,7 @@ export default {
             addVisible.value = false;
             axios({
                 url:'/leyuna/tagType/addTagsAndTypes',
-                method:'post',
+                method:'POST',
                 params: {
                     tags:form.addName
                 }
@@ -195,13 +194,13 @@ export default {
         const saveEdit = () => {
             editVisible.value = false;
             var rowData=tableData.value[idx];
-            var tag=[];
-            tag.push({id:rowData.id,tagName:form.name})
             axios({
                 url:'/leyuna/tagType/updateTagAndTypes',
-                method:'GET',
+                method:'POST',
                 params: {
-                    tag:tag
+                    tag:[{
+                        id:rowData.id,tagName:form.name
+                     }]
                 }
             }).then((res)=>{
                 if(res.data.status){
