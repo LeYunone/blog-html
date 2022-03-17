@@ -71,16 +71,16 @@ export default {
                 method:"POST",
                 data:formData
             }).then((res) => {
-                if(res.data.status){
+                var data = res.data;
+                if(data.status){
                     insertImage({
-                        url:
-                            'https://www.leyuna.xyz/image/'+res.data.data,
+                        url: 'https://www.leyuna.xyz/image/'+data.data,
                         desc: files[0].name,
                         width: 'auto',
                         height: 'auto',
                     });
                 }else{
-                    ElMessage.error(res.data.message);
+                    ElMessage.error(data.message);
                 }
                 // 此处只做示例
             })
@@ -98,6 +98,7 @@ export default {
                     "blogContent":this.blogContent,
                     "remarks":this.preText(this.remarks),
                     "id":blogId,
+                    blogType:1
                 }
             }).then((res) =>{
                 if(res.data.status){

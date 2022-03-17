@@ -16,8 +16,7 @@
             </div>
 
             <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-                <el-table-column prop="id" label="ID" width="55" align="center">
-                    <template #default="scope">{{scope.row.id}}</template>
+                <el-table-column type="index" prop="id" label="ID" width="55" align="center">
                 </el-table-column>
                 <el-table-column prop="typeNavName" label="导航名">
                     <template #default="scope">{{scope.row.typeNavName}}</template>
@@ -86,10 +85,15 @@
                     method:'get',
                     url: '/leyuna/tagType/getTypeNav',
                     params: {
-                        conditionName: query.name
+                        typeNavName: query.name
                     }
                 }).then((res) =>{
-                    tableData.value = res.data.data;
+                    var data = res.data;
+                    if(data.status){
+                        tableData.value = res.data.data;
+                    }else{
+                        ElMessage.error(data.message);
+                    }
                 })
             };
             getData();
@@ -117,12 +121,16 @@
                         params:{
                             typeNavId:tableData.value[index].id
                         }
-                    }).then(() =>{
-                        ElMessage.success("删除成功");
-                        getData();
+                    }).then((res) =>{
+                        var data = res.data;
+                        if(data.status){
+                            ElMessage.success("删除成功");
+                            getData();
+                        }else{
+                            ElMessage.error(data.message);
+                        }
                     })
                 })
-                    .catch(() => {});
             };
 
             // 表格编辑时弹窗和保存
@@ -137,27 +145,22 @@
 
             const handleAdd = () => {
                 addVisible.value = true;
-                axios({
-                    url:"/leyuna/tagType/getTypeNav",
-                    method:'GET'
-                }).then((res) => {
-                    form.typeNav=res.data.data;
-                })
             };
             const saveAdd = () => {
                 addVisible.value = false;
                 axios({
-                    url:'/leyuna/tagType/addTypeNav',
-                    method:'post',
-                    params: {
+                    url:'/leyuna/tagType/saveTypeNav',
+                    method:'POST',
+                    data: {
                         typeNavName:form.addName,
                     }
                 }).then((res)=>{
-                    if(res.data.status){
+                    var data = res.data;
+                    if(data.status){
                         ElMessage.success('添加成功');
                         getData();
                     }else{
-                        ElMessage.error(res.data.message);
+                        ElMessage.error(data.message);
                     }
                     idx= -1;
                 })
@@ -172,18 +175,19 @@
                 editVisible.value = false;
                 var rowData=tableData.value[idx];
                 axios({
-                    url:'/leyuna/tagType/updateTypeNav',
-                    method:'post',
-                    params: {
-                        typeNavId:rowData.id,
+                    url:'/leyuna/tagType/saveTypeNav',
+                    method:'POST',
+                    data: {
+                        id:rowData.id,
                         typeNavName:form.name
                     }
                 }).then((res)=>{
-                    if(res.data.status){
+                    var data = res.data;
+                    if(data.status){
                         ElMessage.success(`修改 ${rowData.typeNavName} [分类导航]成功`);
                         tableData.value[idx].typeNavName = form.name;
                     }else{
-                        ElMessage.error(res.data.message);
+                        ElMessage.error(data.message);
                     }
                     idx= -1;
                 })

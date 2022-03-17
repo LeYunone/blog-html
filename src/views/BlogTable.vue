@@ -16,23 +16,19 @@
             </div>
 
             <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-                <el-table-column prop="id" label="ID" width="55" align="center">
-                    <template #default="scope">{{scope.row.id}}</template>
+                <el-table-column type="index" prop="id" label="ID" width="55" align="center">
                 </el-table-column>
                 <el-table-column prop="title" label="标题">
                     <template #default="scope">{{scope.row.title}}</template>
                 </el-table-column>
-                <el-table-column sortable prop="clickCount" label="点击量">
-                    <template #default="scope">{{ scope.row.clickCount}}</template>
-                </el-table-column>
                 <el-table-column sortable prop="commentCount" label="评论量">
                     <template #default="scope">{{ scope.row.commentCount}}</template>
                 </el-table-column>
-                <el-table-column sortable prop="createTime" label="发布时间">
-                    <template #default="scope">{{ scope.row.createTime}}</template>
+                <el-table-column sortable prop="createDt" label="发布时间">
+                    <template #default="scope">{{ scope.row.createDt}}</template>
                 </el-table-column>
                 <el-table-column sortable prop="updateTime" label="编辑时间">
-                    <template #default="scope">{{ scope.row.updateTime}}</template>
+                    <template #default="scope">{{ scope.row.updateDt}}</template>
                 </el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template #default="scope">
@@ -65,10 +61,11 @@ export default {
                 url:"/leyuna/blog/createDocument",
                 method:"POST"
             }).then((res) => {
-                if(res.data.status){
+                var data = res.data;
+                if(data.status){
                     ElMessage.success('创建成功');
                 }else{
-                    ElMessage.error(res.data.message);
+                    ElMessage.error(data.message);
                 }
             })
         }
@@ -84,16 +81,18 @@ export default {
         // 获取表格数据
         const getData = () => {
             axios({
-                method:'get',
                 url: '/leyuna/blog/blogs',
+                method:'GET',
                 params: {
                     index: query.pageIndex,
                     size: query.pageSize,
-                    conditionName: query.name
+                    conditionName: query.name,
+                    blogType:1
                 }
             }).then((res) =>{
-                tableData.value = res.data.data.records;
-                pageTotal.value=res.data.data.total || 50
+                var data = res.data;
+                tableData.value = data.data.records;
+                pageTotal.value= data.data.total || 50
             })
         };
         getData();

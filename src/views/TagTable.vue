@@ -34,7 +34,7 @@
                 </el-table-column>
 
                 <el-table-column prop="date" label="创建时间">
-                    <template #default="scope">{{ scope.row.createTime}}</template>
+                    <template #default="scope">{{ scope.row.createDt}}</template>
                 </el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template #default="scope">

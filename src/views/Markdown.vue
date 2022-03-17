@@ -4,7 +4,8 @@
         </div>
         <div class="container">
             <div id="main">
-                <v-md-editor v-model="temp.text" :include-level="[1,2,3,4]" height="710px" disabled-menus="[]" @upload-image="handleUploadImage"></v-md-editor>
+                <v-md-editor v-model="temp.text" :include-level="[1,2,3,4]" height="710px" disabled-menus="[]"
+                             @upload-image="handleUploadImage"></v-md-editor>
             </div>
             <el-button class="editor-btn" type="primary" @click="openDia">提交文章</el-button>
             <el-button class="editor-btn" type="primary" @click="addNotice=true">发布网站公告</el-button>
@@ -13,7 +14,7 @@
         <el-dialog title="添加" v-model="addNotice">
             <el-form :model="temp">
                 <el-form-item label="文章标题" :label-width="formLabelWidth">
-                    <el-input v-model="temp.title" autocomplete="off" ></el-input>
+                    <el-input v-model="temp.title" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -26,10 +27,10 @@
             <el-form :model="temp">
 
                 <el-form-item label="文章标题" :label-width="formLabelWidth">
-                    <el-input v-model="temp.title" autocomplete="off" ></el-input>
+                    <el-input v-model="temp.title" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="前言" :label-width="formLabelWidth">
-                    <el-input :rows="6" type="textarea" v-model="temp.remarks" autocomplete="off" ></el-input>
+                    <el-input :rows="6" type="textarea" v-model="temp.remarks" autocomplete="off"></el-input>
                 </el-form-item>
 
                 <el-form-item label="文章标签" :label-width="formLabelWidth">
@@ -61,7 +62,7 @@
                             :options="options"
                             :props="{ expandTrigger: 'hover' }"
                             :show-all-levels=false
-                            ></el-cascader>
+                    ></el-cascader>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -73,47 +74,49 @@
 </template>
 
 <script>
-    import { ref, reactive } from "vue";
-    import { ElMessage, ElMessageBox } from "element-plus";
+    import {ref, reactive} from "vue";
+    import {ElMessage, ElMessageBox} from "element-plus";
     import axios from "axios";
-    import VueMarkdownEditor, { xss } from '@kangc/v-md-editor';
+    import VueMarkdownEditor, {xss} from '@kangc/v-md-editor';
+
     export default {
         data() {
             return {
-                formLabelWidth:'120px',
+                formLabelWidth: '120px',
                 inputVisible: false,
                 inputValue: '',
-                dynamicTags:[],
-                temp:{
+                dynamicTags: [],
+                temp: {
                     text: "",
-                    title:"",
-                    type:[],
-                    remarks:""
+                    title: "",
+                    type: [],
+                    remarks: ""
                 },
-                addNotice:false,
+                addNotice: false,
             };
         },
         methods: {
-            preText (pretext) {
+            preText(pretext) {
                 return pretext.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
             },
-            submitNotice(){
+            submitNotice() {
                 axios({
-                    url:"/leyuna/blog/addWebNotice",
-                    method : "POST",
-                    data:{
-                        title:this.temp.title,
-                        content:this.temp.text,
-                        type:0,
+                    url: "/leyuna/blog/addBlog",
+                    method: "POST",
+                    data: {
+                        title: this.temp.title,
+                        blogContent: this.temp.text,
+                        blogType: 2,
                     }
-                }).then((res)=>{
-                    if(res.data.status){
+                }).then((res) => {
+                    var data = res.data;
+                    if (data.status) {
                         ElMessage.success('发布成功');
-                    }else{
-                        ElMessage.error(res.data.message);
+                    } else {
+                        ElMessage.error(data.message);
                     }
                     this.$router.replace({
-                        path:'/dashboard',
+                        path: '/dashboard',
                         name: "dashboard"
                     })
                 })
@@ -138,50 +141,51 @@
 
             handleUploadImage(event, insertImage, files) {
                 // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
-                let file=files[0];
+                let file = files[0];
                 let formData = new FormData();
-                formData.append('file',files[0]);
+                formData.append('file', files[0]);
                 // console.log(file.name+"==="+file.size);
                 axios({
-                    url:"/leyuna/server/updownimg",
-                    method:"POST",
-                    data:formData
+                    url: "/leyuna/server/updownimg",
+                    method: "POST",
+                    data: formData
                 }).then((res) => {
-                    if(res.data.status){
+                    var data = res.data;
+                    if (data.status) {
                         insertImage({
-                            url:
-                                'https://www.leyuna.xyz/image/'+res.data.data,
+                            url: 'https://www.leyuna.xyz/image/' + data.data,
                             desc: files[0].name,
                             width: 'auto',
                             height: 'auto',
                         });
-                    }else{
-                        ElMessage.error(res.data.message);
+                    } else {
+                        ElMessage.error(data.message);
                     }
                     // 此处只做示例
                 })
             },
 
             submit() {
-                // const html = xss.process(VueMarkdownEditor.vMdParser.themeConfig.markdownParser.render(this.temp.text));
                 axios({
-                    url:"/leyuna/blog/addBlog",
-                    method:"post",
-                    data:{
-                        "blogContent":this.temp.text,
-                        "type":this.temp.type[1],
-                        "tags":this.dynamicTags,
-                        "title":this.temp.title,
-                        "remarks":this.preText(this.temp.remarks),
+                    url: "/leyuna/blog/addBlog",
+                    method: "POST",
+                    data: {
+                        "blogContent": this.temp.text,
+                        "type": this.temp.type[1],
+                        "tags": this.dynamicTags,
+                        "title": this.temp.title,
+                        "remarks": this.preText(this.temp.remarks),
+                        blogType: 1
                     }
                 }).then((res) => {
-                    if(res.data.status){
+                    var data = res.data;
+                    if (data.status) {
                         ElMessage.success('发布成功');
-                    }else{
-                        ElMessage.error(res.data.message);
+                    } else {
+                        ElMessage.error(data.message);
                     }
                     this.$router.replace({
-                        path:'/dashboard',
+                        path: '/dashboard',
                         name: "dashboard"
                     })
                 })
@@ -189,15 +193,21 @@
         },
 
 
-        setup(){
-            let dialogFormVisible=ref(false);
-            let options=ref([]);
-            const openDia = () =>{
+        setup() {
+            let dialogFormVisible = ref(false);
+            let options = ref([]);
+            const openDia = () => {
                 axios({
-                    url:"/leyuna/tagType/getTypeInNav",
-                }).then((res)=>{
-                    options.value=res.data.data;
-                    dialogFormVisible.value=true;
+                    url: "/leyuna/tagType/getTypeInNav",
+                }).then((res) => {
+                    var data = res.data;
+                    if(data.status){
+                        options.value = data.data;
+                        dialogFormVisible.value = true;
+                    }else{
+                        ElMessage.error(data.message);
+                    }
+
                 })
             };
             return {
@@ -209,7 +219,7 @@
     }
 </script>
 <style scoped>
-    .editor-btn{
+    .editor-btn {
         margin-top: 20px;
     }
 </style>

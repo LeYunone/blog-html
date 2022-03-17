@@ -16,8 +16,7 @@
             </div>
 
             <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-                <el-table-column prop="id" label="ID" width="55" align="center">
-                    <template #default="scope">{{scope.row.id}}</template>
+                <el-table-column type="index" prop="id" label="ID" width="55" align="center">
                 </el-table-column>
                 <el-table-column prop="typeName" label="分类名">
                     <template #default="scope">{{scope.row.typeName}}</template>
@@ -27,28 +26,31 @@
                 </el-table-column>
                 <el-table-column label="状态" align="center">
                     <template #default="scope">
-                        <el-tag  :type="
+                        <el-tag :type="
                                 scope.row.userStatus === 'hot'
                                     ? 'success' : 'danger'
-                            ">{{ scope.row.userStatus }}</el-tag>
+                            ">{{ scope.row.userStatus }}
+                        </el-tag>
                     </template>
                 </el-table-column>
 
                 <el-table-column prop="date" label="创建时间">
-                    <template #default="scope">{{ scope.row.createTime}}</template>
+                    <template #default="scope">{{ scope.row.createDt}}</template>
                 </el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template #default="scope">
                         <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑
                         </el-button>
                         <el-button type="text" icon="el-icon-delete" class="red"
-                                   @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                   @click="handleDelete(scope.$index, scope.row)">删除
+                        </el-button>
                     </template>
                 </el-table-column>
             </el-table>
             <div class="pagination">
                 <el-pagination background layout="total, prev, pager, next" :current-page="query.pageIndex"
-                               :page-size="query.pageSize" :total="pageTotal" @current-change="handlePageChange"></el-pagination>
+                               :page-size="query.pageSize" :total="pageTotal"
+                               @current-change="handlePageChange"></el-pagination>
             </div>
         </div>
 
@@ -72,7 +74,8 @@
             <el-form label-width="70px">
                 <el-form-item label="分类导航">
                     <el-select v-model="form.typeValue" placeholder="请选择分类导航">
-                        <el-option v-for="item in form.typeNav" :key="item.id" :label="item.typeNavName" :value="item.id"/>
+                        <el-option v-for="item in form.typeNav" :key="item.id" :label="item.typeNavName"
+                                   :value="item.id"/>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="分类名">
@@ -90,14 +93,14 @@
 </template>
 
 <script>
-    import { ref, reactive } from "vue";
-    import { ElMessage, ElMessageBox } from "element-plus";
+    import {ref, reactive} from "vue";
+    import {ElMessage, ElMessageBox} from "element-plus";
     import axios from "axios";
+
     export default {
         name: "typetable",
         data() {
-            return {
-            };
+            return {};
         },
         setup() {
             const query = reactive({
@@ -110,16 +113,22 @@
             // 获取表格数据
             const getData = () => {
                 axios({
-                    method:'get',
+                    method: 'get',
                     url: '/leyuna/tagType/types',
                     params: {
-                        pageIndex: query.pageIndex,
-                        pageSize: query.pageSize,
+                        index: query.pageIndex,
+                        size: query.pageSize,
                         conditionName: query.name
                     }
-                }).then((res) =>{
-                    tableData.value = res.data.data.records;
-                    pageTotal.value=res.data.page.total || 50
+                }).then((res) => {
+                    var data = res.data;
+                    if (data.status) {
+                        tableData.value = data.data.records;
+                        pageTotal.value = data.data.total || 50
+                    } else {
+                        ElMessage.error(data.message)
+                    }
+
                 })
             };
             getData();
@@ -142,17 +151,16 @@
                     type: "warning",
                 }).then(() => {
                     axios({
-                        url:"/leyuna/tagType/deleteTagsAndTypes",
-                        method:'GET',
-                        params:{
-                            types:tableData.value[index].id
+                        url: "/leyuna/tagType/deleteTagsAndTypes",
+                        method: 'GET',
+                        params: {
+                            types: tableData.value[index].id
                         }
-                    }).then(() =>{
+                    }).then(() => {
                         ElMessage.success("删除成功");
                         getData();
                     })
                 })
-                    .catch(() => {});
             };
 
             // 表格编辑时弹窗和保存
@@ -160,64 +168,72 @@
             const editVisible = ref(false);
             let form = reactive({
                 name: "",
-                addName:"",
-                typeNav:[],
-                typeValue:""
+                addName: "",
+                typeNav: [],
+                typeValue: ""
             });
             let idx = -1;
 
             const handleAdd = () => {
                 addVisible.value = true;
                 axios({
-                    url:"/leyuna/tagType/getTypeNav",
-                    method:'GET'
+                    url: "/leyuna/tagType/getTypeNav",
+                    method: 'GET'
                 }).then((res) => {
-                    form.typeNav=res.data.data;
+                    var data = res.data;
+                    if (data.status) {
+                        form.typeNav = res.data.data;
+                    } else {
+                        ElMessage.error(data.message);
+                    }
                 })
             };
             const saveAdd = () => {
                 addVisible.value = false;
                 axios({
-                    url:'/leyuna/tagType/addTagsAndTypes',
-                    method:'post',
+                    url: '/leyuna/tagType/addTagsAndTypes',
+                    method: 'post',
                     params: {
-                        types:form.addName,
-                        typeNav:form.typeValue
+                        types: form.addName,
+                        typeNav: form.typeValue
                     }
-                }).then((res)=>{
-                    if(res.data.status){
+                }).then((res) => {
+                    var data = res.data;
+                    if (data.status) {
                         ElMessage.success('添加成功');
                         getData();
-                    }else{
-                        ElMessage.error(res.data.message);
+                    } else {
+                        ElMessage.error(data.message);
                     }
-                    idx= -1;
+                    idx = -1;
                 })
             };
 
             const handleEdit = (index, row) => {
                 idx = index;
-                form.name=row.typeName;
+                form.name = row.typeName;
                 editVisible.value = true;
             };
             const saveEdit = () => {
                 editVisible.value = false;
-                var rowData=tableData.value[idx];
+                var rowData = tableData.value[idx];
                 axios({
-                    url:'/leyuna/tagType/updateType',
-                    method:'post',
+                    url: '/leyuna/tagType/updateTagAndTypes',
+                    method: 'GET',
                     params: {
-                        id:rowData.id,
-                        typeName:form.name
+                        id: rowData.id,
+                        newName: form.name,
+                        name: "type"
                     }
-                }).then((res)=>{
-                    if(res.data.status){
+                }).then((res) => {
+                    var data = res.data;
+                    if (data.status) {
                         ElMessage.success(`修改 ${rowData.typeName} [分类]成功`);
                         tableData.value[idx].typeName = form.name;
-                    }else{
-                        ElMessage.error(res.data.message);
+                    } else {
+                        ElMessage.error(data.message);
                     }
-                    idx= -1;
+                    idx = -1;
                 })
             };
 
@@ -253,23 +269,28 @@
         width: 300px;
         display: inline-block;
     }
+
     .table {
         width: 100%;
         font-size: 14px;
     }
+
     .red {
         color: #ff0000;
     }
+
     .mr10 {
         margin-right: 10px;
     }
+
     .table-td-thumb {
         display: block;
         margin: auto;
         width: 40px;
         height: 40px;
     }
-    #addBtn{
+
+    #addBtn {
         float: right;
     }
 </style>

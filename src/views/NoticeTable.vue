@@ -12,18 +12,16 @@
             <div class="handle-box">
                 <el-input v-model="query.name" placeholder="文章名" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
-                <el-button type="success"  id="addBtn" icon="el-icon-roundadd">添加</el-button>
             </div>
 
             <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-                <el-table-column prop="id" label="ID" width="55" align="center">
-                    <template #default="scope">{{scope.row.id}}</template>
+                <el-table-column type="index" prop="id" label="ID" width="55" align="center">
                 </el-table-column>
                 <el-table-column prop="title" label="标题">
                     <template #default="scope">{{scope.row.title}}</template>
                 </el-table-column>
-                <el-table-column sortable prop="createTime" label="发布时间">
-                    <template #default="scope">{{ scope.row.createTime}}</template>
+                <el-table-column sortable prop="createDt" label="发布时间">
+                    <template #default="scope">{{ scope.row.createDt}}</template>
                 </el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template #default="scope">
@@ -64,15 +62,17 @@ export default {
         const getData = () => {
             axios({
                 method:'get',
-                url: '/leyuna/blog/notices',
+                url: '/leyuna/blog/blogs',
                 params: {
                     index: query.pageIndex,
                     size: query.pageSize,
-                    conditionName: query.name
+                    conditionName: query.name,
+                    type:2
                 }
             }).then((res) =>{
-                tableData.value = res.data.data.records;
-                pageTotal.value=res.data.data.total || 50
+                var data = res.data;
+                tableData.value = data.data.records;
+                pageTotal.value= data.data.total || 50
             })
         };
         getData();

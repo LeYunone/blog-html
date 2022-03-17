@@ -60,22 +60,22 @@ export default {
                         index: "/typeNav",
                         title: "分类导航",
                     },
+                    {
+                        icon: "el-icon-lx-calendar",
+                        index: "/blogTable",
+                        title: "博客管理",
+                    },
+                    {
+                        icon: "el-icon-lx-calendar",
+                        index: "/noticeTable",
+                        title: "公告管理",
+                    },
                 ],
             },
             {
                 icon: "el-icon-lx-calendar",
                 index: "/markdown",
                 title: "发布博客",
-            },
-            {
-                icon: "el-icon-lx-calendar",
-                index: "/blogTable",
-                title: "博客管理",
-            },
-            {
-                icon: "el-icon-lx-calendar",
-                index: "/noticeTable",
-                title: "公告管理",
             },
             {
                 icon: "el-icon-lx-copy",
