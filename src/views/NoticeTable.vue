@@ -23,6 +23,9 @@
                 <el-table-column sortable prop="createDt" label="发布时间">
                     <template #default="scope">{{ scope.row.createDt}}</template>
                 </el-table-column>
+                <el-table-column sortable prop="updateDt" label="更新时间">
+                    <template #default="scope">{{ scope.row.updateDt}}</template>
+                </el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template #default="scope">
                         <el-button type="text" icon="el-icon-edit" @click="editBlog(scope.row)">编辑
@@ -67,7 +70,7 @@ export default {
                     index: query.pageIndex,
                     size: query.pageSize,
                     conditionName: query.name,
-                    type:2
+                    blogType:2
                 }
             }).then((res) =>{
                 var data = res.data;
@@ -86,7 +89,6 @@ export default {
             query.pageIndex = val;
             getData();
         };
-
 
         return {
             query,

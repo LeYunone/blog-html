@@ -10,9 +10,10 @@
         </div>
         <div class="el-main">
             <div class="blogCss">
-                <v-md-editor :include-level="[1,2,3,4]" v-model="content" height="710px" disabled-menus="[]" @upload-image="handleUploadImage"></v-md-editor>
+                <v-md-editor :include-level="[1,2,3,4]" v-model="content" height="710px" disabled-menus="[]"
+                             @upload-image="handleUploadImage"></v-md-editor>
             </div>
-            <el-button @click="editVisible = true" plain> - 保存 - </el-button>
+            <el-button @click="editVisible = true" plain> - 保存 -</el-button>
         </div>
     </div>
 
@@ -35,90 +36,92 @@
 </template>
 
 <script>
-import { ref, reactive } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import axios from "axios";
-export default {
-    data() {
-        return {
-            title:"",
-            content:"",
-            editVisible:false
-        };
-    },
-    mounted:function(){
-        this.thisNotice();//需要触发的函数
-    },
-    methods: {
-        handleUploadImage(event, insertImage, files) {
-            // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
-            let file=files[0];
-            console.log(files[0])
-            let formData = new FormData();
-            formData.append('file',files[0]);
-            // console.log(file.name+"==="+file.size);
-            axios({
-                url:"/leyuna/server/updownimg",
-                method:"POST",
-                data:formData
-            }).then((res) => {
-                if(res.data.status){
-                    insertImage({
-                        url:
-                            'https://www.leyuna.xyz/image/'+res.data.data,
-                        desc: files[0].name,
-                        width: 'auto',
-                        height: 'auto',
-                    });
-                }else{
-                    ElMessage.error(res.data.message);
-                }
-                // 此处只做示例
-            })
+    import {ref, reactive} from "vue";
+    import {ElMessage, ElMessageBox} from "element-plus";
+    import axios from "axios";
+
+    export default {
+        data() {
+            return {
+                title: "",
+                content: "",
+                editVisible: false
+            };
         },
-        saveEdit(){
-            const noticeId = this.$route.query.noticeId;
-            axios({
-                url:"/leyuna/blog/editNotice",
-                method: "POST",
-                data:{
-                    "title":this.title,
-                    "content":this.content,
-                    "id":noticeId,
-                    "type":0
-                }
-            }).then((res) =>{
-                if(res.data.status){
-                    ElMessage.success('发布成功');
-                }else{
-                    ElMessage.error(res.data.message);
-                }
-                window.close();
-            })
+        mounted: function () {
+            this.thisNotice();//需要触发的函数
         },
-        thisNotice(){
-            const noticeId = this.$route.query.noticeId;
-            axios({
-                url:"/leyuna/blog/notice/"+noticeId+"/"+0,
-                method:"GET",
-            }).then((res) =>{
-                this.title=res.data.data.title;
-                this.content=res.data.data.content;
-            })
+        methods: {
+            handleUploadImage(event, insertImage, files) {
+                // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
+                let file = files[0];
+                console.log(files[0])
+                let formData = new FormData();
+                formData.append('file', files[0]);
+                // console.log(file.name+"==="+file.size);
+                axios({
+                    url: "/leyuna/server/updownimg",
+                    method: "POST",
+                    data: formData
+                }).then((res) => {
+                    var data = res.data;
+                    if (data.status) {
+                        insertImage({
+                            url: 'https://www.leyuna.xyz/image/' + data.data,
+                            desc: files[0].name,
+                            width: 'auto',
+                            height: 'auto',
+                        });
+                    } else {
+                        ElMessage.error(data.message);
+                    }
+                })
+            },
+            saveEdit() {
+                const noticeId = this.$route.query.noticeId;
+                axios({
+                    url: "/leyuna/blog/edit",
+                    method: "POST",
+                    data: {
+                        "title": this.title,
+                        "blogContent": this.content,
+                        "id": noticeId,
+                        "blogType": 2
+                    }
+                }).then((res) => {
+                    var data = res.data;
+                    if (data.status) {
+                        ElMessage.success('发布成功');
+                    } else {
+                        ElMessage.error(data.message);
+                    }
+                    window.close();
+                })
+            },
+            thisNotice() {
+                const noticeId = this.$route.query.noticeId;
+                axios({
+                    url: "/leyuna/blog/blog/" + noticeId,
+                    method: "GET",
+                }).then((res) => {
+                    var data = res.data;
+                    this.title = data.data.title;
+                    this.content = data.data.blogContent;
+                })
+            },
         },
-    },
-    setup(){
-        return {
-        }
-    },
-};
+        setup() {
+            return {}
+        },
+    };
 </script>
 
 <style scoped>
-    .blogCss{
-        color:red;
+    .blogCss {
+        color: red;
     }
-    .el-main{
+
+    .el-main {
         padding: 30px;
         background: #fff;
         border: 1px solid #ddd;
