@@ -9,7 +9,7 @@
                              left-toolbar="undo redo clear |
                              h bold italic strikethrough quote |
                               ul ol table hr |
-                               link image code emoToolbar |
+                               link image code emoji emoToolbar |
                                "
                              :toolbar="toolbar"
                              height="710px"
@@ -95,31 +95,29 @@
                     emoToolbar: {
                         icon: 'v-md-icon-tip',
                         title: '表情包',
+                        action(){
+                            //获得服务器表情包
+                            axios({
+                                url:"/leyuna/blog/getEmoticon",
+                                method:"GET"
+                            }).then((res)=>{
+                                var data = res.data;
+                                if(data.status){
+                                    console.log(data.data);
+                                    this.emoImg=data.data;
+                                }else{
+                                    ElMessage.error(data.message);
+                                }
+                            })
+                        },
                         menus: {
-                            mode: 'panel',
-                            itemWidth: '56px',
+                            itemWidth: '70px',
                             rowNum: 5,
-                            items: [{
-                                    text: 'item1',
-                                }, {
-                                    text: 'item2',
-                                }, {
-                                    text: 'item3',
-                                }, {
-                                    text: 'item4',
-                                }, {
-                                    text: 'item5',
-                                }, {
-                                    text: 'item6',
-                                }, {
-                                    text: 'item7',
-                                }, {
-                                    text: 'item8',
-                                },
-                            ],
+                            items:this.emoImg ,
                         },
                     },
                 },
+                emoImg:[],
                 formLabelWidth: '120px',
                 inputVisible: false,
                 inputValue: '',
