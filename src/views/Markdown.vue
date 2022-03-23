@@ -4,7 +4,16 @@
         </div>
         <div class="container">
             <div id="main">
-                <v-md-editor v-model="temp.text" :include-level="[1,2,3,4]" height="710px" disabled-menus="[]"
+                <v-md-editor v-model="temp.text"
+                             :include-level="[1,2,3,4]"
+                             left-toolbar="undo redo clear |
+                             h bold italic strikethrough quote |
+                              ul ol table hr |
+                               link image code emoToolbar |
+                               "
+                             :toolbar="toolbar"
+                             height="710px"
+                             disabled-menus="[]"
                              @upload-image="handleUploadImage"></v-md-editor>
             </div>
             <el-button class="editor-btn" type="primary" @click="openDia">提交文章</el-button>
@@ -82,6 +91,35 @@
     export default {
         data() {
             return {
+                toolbar: {
+                    emoToolbar: {
+                        icon: 'v-md-icon-tip',
+                        title: '表情包',
+                        menus: {
+                            mode: 'panel',
+                            itemWidth: '56px',
+                            rowNum: 5,
+                            items: [{
+                                    text: 'item1',
+                                }, {
+                                    text: 'item2',
+                                }, {
+                                    text: 'item3',
+                                }, {
+                                    text: 'item4',
+                                }, {
+                                    text: 'item5',
+                                }, {
+                                    text: 'item6',
+                                }, {
+                                    text: 'item7',
+                                }, {
+                                    text: 'item8',
+                                },
+                            ],
+                        },
+                    },
+                },
                 formLabelWidth: '120px',
                 inputVisible: false,
                 inputValue: '',
@@ -201,10 +239,10 @@
                     url: "/leyuna/tagType/getTypeInNav",
                 }).then((res) => {
                     var data = res.data;
-                    if(data.status){
+                    if (data.status) {
                         options.value = data.data;
                         dialogFormVisible.value = true;
-                    }else{
+                    } else {
                         ElMessage.error(data.message);
                     }
 

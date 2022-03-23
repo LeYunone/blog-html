@@ -40,7 +40,8 @@ import 'codemirror/addon/scroll/simplescrollbars.css';
 // style
 import 'codemirror/lib/codemirror.css';
 import createAlignPlugin from '@kangc/v-md-editor/lib/plugins/align';
-
+import createEmojiPlugin from '@kangc/v-md-editor/lib/plugins/emoji/index';
+import '@kangc/v-md-editor/lib/plugins/emoji/emoji.css';
 
 VMdEditor.Codemirror = Codemirror;
 VMdEditor.use(githubTheme, {
@@ -55,6 +56,8 @@ VueMarkdownEditor.use(vuepressTheme, {
 });
 VueMarkdownEditor.use(createTodoListPlugin());
 VueMarkdownEditor.use(createAlignPlugin());
+VueMarkdownEditor.use(createEmojiPlugin());
+
 const app = createApp(App)
 app.use(VMdEditor);
 
