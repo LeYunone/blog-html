@@ -58,7 +58,7 @@
                 console.log(files[0])
                 let formData = new FormData();
                 formData.append('file', files[0]);
-                // console.log(file.name+"==="+file.size);
+                formData.append("type","1");
                 axios({
                     url: "/leyuna/server/updownimg",
                     method: "POST",

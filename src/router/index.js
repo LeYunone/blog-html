@@ -67,12 +67,12 @@ const routes = [
                 },
                 component: () => import ( /* webpackChunkName: "i18n" */ "../views/I18n.vue")
             }, {
-                path: "/upload",
-                name: "upload",
+                path: "/emoUpload",
+                name: "emoUpload",
                 meta: {
-                    title: '上传插件'
+                    title: '表情包上传'
                 },
-                component: () => import ( /* webpackChunkName: "upload" */ "../views/Upload.vue")
+                component: () => import ( /* webpackChunkName: "upload" */ "../views/emoUpload.vue")
             }, {
                 path: "/icon",
                 name: "icon",
