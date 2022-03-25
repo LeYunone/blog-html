@@ -67,7 +67,7 @@
                     var data = res.data;
                     if (data.status) {
                         insertImage({
-                            url: 'https://www.leyuna.xyz/image/' + data.data,
+                            url: data.data,
                             desc: files[0].name,
                             width: 'auto',
                             height: 'auto',

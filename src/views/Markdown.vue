@@ -37,10 +37,10 @@
                 width="36%"
                 center>
             <el-image v-for="item in emoImg"
-                    style="width: 60px; height: 60px;margin: 9px"
-                    :src="item"
-                    @click="markEmoImg(item)"
-                    fit="contain"></el-image>
+                      style="width: 60px; height: 60px;margin: 9px"
+                      :src="item"
+                      @click="markEmoImg(item)"
+                      fit="contain"></el-image>
         </el-dialog>
 
         <el-dialog title="添加" v-model="dialogFormVisible">
@@ -129,12 +129,12 @@
         },
         methods: {
             //添加表情包到mark中
-            markEmoImg(emo){
-                this.temp.text=this.temp.text+"![emo]("+emo+"){{{width=\"auto\" height=\"auto\"}}}";
+            markEmoImg(emo) {
+                this.temp.text = this.temp.text + "![emo](" + emo + "){{{width=\"auto\" height=\"auto\"}}}";
                 this.emoDia = false;
             },
             //获得服务器表情包
-            getEmoList(){
+            getEmoList() {
                 axios({
                     url: "/leyuna/blog/getEmoticon",
                     method: "GET"
@@ -206,7 +206,7 @@
                     var data = res.data;
                     if (data.status) {
                         insertImage({
-                            url: 'https://www.leyuna.xyz/image/' + data.data,
+                            url: data.data,
                             desc: files[0].name,
                             width: 'auto',
                             height: 'auto',
