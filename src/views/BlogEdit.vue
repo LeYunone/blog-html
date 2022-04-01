@@ -12,7 +12,15 @@
             <div v-html="remarks" class="plugins-tips">
             </div>
             <div class="blogCss">
-                <v-md-editor :include-level="[1,2,3,4]" v-model="blogContent" height="710px" disabled-menus="[]"
+                <v-md-editor v-model="blogContent"
+                             :include-level="[1,2,3,4]"
+                             left-toolbar="undo redo clear |
+                             h bold italic strikethrough quote |
+                             ul ol table hr |
+                             link image code emoji emoToolbar |"
+                             :toolbar="toolbar"
+                             height="710px"
+                             disabled-menus="[]"
                              @upload-image="handleUploadImage"></v-md-editor>
             </div>
             <div v-html="remarks" class="plugins-tips">
@@ -21,6 +29,17 @@
             <el-button @click="editVisible = true" plain> - 保存 -</el-button>
         </div>
     </div>
+    <el-dialog
+            title="emo"
+            v-model="emoDia"
+            width="36%"
+            center>
+        <el-image v-for="item in emoImg"
+                  style="width: 60px; height: 60px;margin: 9px"
+                  :src="item"
+                  @click="markEmoImg(item)"
+                  fit="contain"></el-image>
+    </el-dialog>
 
     <!-- 编辑弹出框 -->
     <el-dialog title="编辑" v-model="editVisible" width="30%">
@@ -50,7 +69,19 @@
 
     export default {
         data() {
+            let self = this
             return {
+                emoDia: false,
+                toolbar: {
+                    emoToolbar: {
+                        icon: 'el-icon-chat-line-round',
+                        title: '表情包',
+                        action() {
+                            self.getEmoList();
+                        },
+                    },
+                },
+                emoImg: [],
                 title: "",
                 blogContent: "",
                 remarks: "",
@@ -61,6 +92,27 @@
             this.thisBlog();//需要触发的函数
         },
         methods: {
+            //添加表情包到mark中
+            markEmoImg(emo) {
+                this.temp.text = this.temp.text + "![emo](" + emo + "){{{width=\"150\" height=\"150\"}}}";
+                this.emoDia = false;
+            },
+            //获得服务器表情包
+            getEmoList() {
+                axios({
+                    url: "/leyuna/blog/getEmoticon",
+                    method: "GET"
+                }).then((res) => {
+                    var data = res.data;
+                    if (data.status) {
+                        this.emoImg = data.data;
+                    } else {
+                        ElMessage.error(data.message);
+                    }
+                    console.log(this.emoImg)
+                })
+                this.emoDia = true;
+            },
             handleUploadImage(event, insertImage, files) {
                 // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
                 let file = files[0];

@@ -130,7 +130,7 @@
         methods: {
             //添加表情包到mark中
             markEmoImg(emo) {
-                this.temp.text = this.temp.text + "![emo](" + emo + "){{{width=\"auto\" height=\"auto\"}}}";
+                this.temp.text = this.temp.text + "![emo](" + emo + "){{{width=\"150\" height=\"150\"}}}";
                 this.emoDia = false;
             },
             //获得服务器表情包
