@@ -17,6 +17,7 @@
             </div>
             <el-button class="editor-btn" type="primary" @click="openDia">提交文章</el-button>
             <el-button class="editor-btn" type="primary" @click="addNotice=true">发布网站公告</el-button>
+            <el-button class="editor-btn" type="primary" @click="addAnime=true">ANIME</el-button>
         </div>
 
         <el-dialog title="添加" v-model="addNotice">
@@ -41,6 +42,23 @@
                       :src="item"
                       @click="markEmoImg(item)"
                       fit="contain"></el-image>
+        </el-dialog>
+
+        <el-dialog title="添加" v-model="addAnime">
+            <el-upload
+                    action="#"
+                    list-type="picture-card"
+                    :on-preview="handlePictureCardPreview">
+                <i class="el-icon-plus"></i>
+            </el-upload>
+            <el-dialog :visible.sync="animeImgDia">
+                <img width="100%" :src="animeImgSrc" alt="">
+            </el-dialog>
+            
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="addNotice = false">取 消</el-button>
+                <el-button type="primary" @click="submitNotice">确 定</el-button>
+            </div>
         </el-dialog>
 
         <el-dialog title="添加" v-model="dialogFormVisible">
@@ -103,6 +121,9 @@
         data() {
             let self = this
             return {
+                animeImgSrc:"",
+                animeImgDia:false,
+                addAnime:false,
                 emoDia: false,
                 toolbar: {
                     emoToolbar: {
@@ -128,6 +149,10 @@
             };
         },
         methods: {
+            handlePictureCardPreview(file) {
+                this.animeImgSrc = file.url;
+                this.animeImgDia = true;
+            },
             //添加表情包到mark中
             markEmoImg(emo) {
                 document.execCommand('insertText', false, "![emo](" + emo + "){{{width=\"100\" height=\"100\"}}}")
