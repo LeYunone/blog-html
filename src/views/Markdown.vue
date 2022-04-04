@@ -45,19 +45,29 @@
         </el-dialog>
 
         <el-dialog title="添加" v-model="addAnime">
-            <el-upload
-                    action="#"
-                    list-type="picture-card"
-                    :on-preview="handlePictureCardPreview">
-                <i class="el-icon-plus"></i>
-            </el-upload>
-            <el-dialog :visible.sync="animeImgDia">
-                <img width="100%" :src="animeImgSrc" alt="">
-            </el-dialog>
-            
+            <el-form :model="temp">
+                <el-upload
+                        class="blog_cover_upload"
+                        action="/leyuna/tourist/requestUpImg"
+                        :show-file-list="false"
+                        :on-success="handleSuccess">
+                    <el-avatar class="blog_cover" fit="contain" v-if="animeImgSrc" shape="square" :size="100"
+                               :src="animeImgSrc"></el-avatar>
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
+
+                <el-form-item label="文章标题" :label-width="formLabelWidth">
+                    <el-input v-model="temp.title" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="第三方链接" :label-width="formLabelWidth">
+                    <el-input v-model="temp.link" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+
+
             <div slot="footer" class="dialog-footer">
-                <el-button @click="addNotice = false">取 消</el-button>
-                <el-button type="primary" @click="submitNotice">确 定</el-button>
+                <el-button @click="addAnime = false">取 消</el-button>
+                <el-button type="primary" @click="submitAnime">确 定</el-button>
             </div>
         </el-dialog>
 
@@ -121,9 +131,9 @@
         data() {
             let self = this
             return {
-                animeImgSrc:"",
-                animeImgDia:false,
-                addAnime:false,
+                animeImgSrc: "",
+                animeImgDia: false,
+                addAnime: false,
                 emoDia: false,
                 toolbar: {
                     emoToolbar: {
@@ -143,15 +153,22 @@
                     text: "",
                     title: "",
                     type: [],
-                    remarks: ""
+                    remarks: "",
+                    link: "",
+                    cover: ""
                 },
                 addNotice: false,
             };
         },
         methods: {
-            handlePictureCardPreview(file) {
-                this.animeImgSrc = file.url;
-                this.animeImgDia = true;
+            handleSuccess(res, file) {
+                if (res.status) {
+                    this.animeImgSrc = URL.createObjectURL(file.raw);
+                    this.temp.cover = file.raw;
+                } else {
+                    this.$message.error("别太频繁，明天再来换头像吧");
+                    this.animeImgSrc = res.message;
+                }
             },
             //添加表情包到mark中
             markEmoImg(emo) {
@@ -177,6 +194,35 @@
             preText(pretext) {
                 return pretext.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
             },
+            submitAnime() {
+                console.log(this.temp.cover);
+
+                let formData = new FormData();
+                formData.append('cover', this.temp.cover);
+                formData.append('title', this.temp.title);
+                formData.append('blogContent', this.temp.text);
+                formData.append('blogType', 4);
+                formData.append('blogLink', this.temp.link);
+
+                axios({
+                    url: "/leyuna/blog/addBlog",
+                    method: "POST",
+                    processData: false, // 使数据不做处理
+                    contentType: false,
+                    data: formData
+                }).then((res) => {
+                    var data = res.data;
+                    if (data.status) {
+                        ElMessage.success('发布成功');
+                    } else {
+                        ElMessage.error(data.message);
+                    }
+                    this.$router.replace({
+                        path: '/dashboard',
+                        name: "dashboard"
+                    })
+                })
+            },
             submitNotice() {
                 axios({
                     url: "/leyuna/blog/addBlog",
@@ -185,6 +231,31 @@
                         title: this.temp.title,
                         blogContent: this.temp.text,
                         blogType: 2,
+                    }
+                }).then((res) => {
+                    var data = res.data;
+                    if (data.status) {
+                        ElMessage.success('发布成功');
+                    } else {
+                        ElMessage.error(data.message);
+                    }
+                    this.$router.replace({
+                        path: '/dashboard',
+                        name: "dashboard"
+                    })
+                })
+            },
+            submit() {
+                axios({
+                    url: "/leyuna/blog/addBlog",
+                    method: "POST",
+                    data: {
+                        "blogContent": this.temp.text,
+                        "type": this.temp.type[1],
+                        "tags": this.dynamicTags,
+                        "title": this.temp.title,
+                        "remarks": this.preText(this.temp.remarks),
+                        blogType: 1
                     }
                 }).then((res) => {
                     var data = res.data;
@@ -222,7 +293,7 @@
                 let file = files[0];
                 let formData = new FormData();
                 formData.append('file', files[0]);
-                formData.append("type","1");
+                formData.append("type", "1");
                 // console.log(file.name+"==="+file.size);
                 axios({
                     url: "/leyuna/server/updownimg",
@@ -241,32 +312,6 @@
                         ElMessage.error(data.message);
                     }
                     // 此处只做示例
-                })
-            },
-
-            submit() {
-                axios({
-                    url: "/leyuna/blog/addBlog",
-                    method: "POST",
-                    data: {
-                        "blogContent": this.temp.text,
-                        "type": this.temp.type[1],
-                        "tags": this.dynamicTags,
-                        "title": this.temp.title,
-                        "remarks": this.preText(this.temp.remarks),
-                        blogType: 1
-                    }
-                }).then((res) => {
-                    var data = res.data;
-                    if (data.status) {
-                        ElMessage.success('发布成功');
-                    } else {
-                        ElMessage.error(data.message);
-                    }
-                    this.$router.replace({
-                        path: '/dashboard',
-                        name: "dashboard"
-                    })
                 })
             },
         },
@@ -297,8 +342,28 @@
         }
     }
 </script>
-<style scoped>
+<style>
     .editor-btn {
         margin-top: 20px;
+    }
+
+    .blog_cover_upload .el-upload {
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        width: 100px;
+        height: 100px;
+    }
+
+    .blog_cover_upload {
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        width: 100px;
+        height: 100px;
     }
 </style>
