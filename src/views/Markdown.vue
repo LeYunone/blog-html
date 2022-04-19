@@ -53,8 +53,18 @@
                         :on-success="handleSuccess">
                     <el-avatar class="blog_cover" fit="contain" v-if="animeImgSrc" shape="square" :size="100"
                                :src="animeImgSrc"></el-avatar>
-                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
+
+                <v-md-editor v-model="temp.remarks"
+                             :include-level="[1,2,3,4]"
+                             left-toolbar="undo redo clear |
+                             h bold italic strikethrough quote |
+                             ul ol table hr |
+                             link image code emoji emoToolbar |"
+                             :toolbar="toolbar"
+                             height="400px"
+                             disabled-menus="[]"
+                             @upload-image="handleUploadImage"></v-md-editor>
 
                 <el-form-item label="文章标题" :label-width="formLabelWidth">
                     <el-input v-model="temp.title" autocomplete="off"></el-input>
@@ -63,7 +73,6 @@
                     <el-input v-model="temp.link" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
-
 
             <div slot="footer" class="dialog-footer">
                 <el-button @click="addAnime = false">取 消</el-button>
@@ -203,7 +212,8 @@
                 formData.append('blogContent', this.temp.text);
                 formData.append('blogType', 4);
                 formData.append('blogLink', this.temp.link);
-
+                formData.append('remarks',this.temp.remarks);
+                
                 axios({
                     url: "/leyuna/blog/addBlog",
                     method: "POST",
