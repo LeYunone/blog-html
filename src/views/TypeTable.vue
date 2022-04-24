@@ -118,7 +118,7 @@
                     params: {
                         index: query.pageIndex,
                         size: query.pageSize,
-                        conditionName: query.name
+                        typeName: query.name
                     }
                 }).then((res) => {
                     var data = res.data;

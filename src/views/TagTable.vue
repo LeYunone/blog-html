@@ -105,7 +105,7 @@ export default {
                 params: {
                     index: query.pageIndex,
                     size: query.pageSize,
-                    conditionName: query.name
+                    tagName: query.name
                 }
             }).then((res) =>{
                 var data = res.data;

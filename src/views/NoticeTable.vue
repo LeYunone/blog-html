@@ -69,7 +69,7 @@ export default {
                 params: {
                     index: query.pageIndex,
                     size: query.pageSize,
-                    conditionName: query.name,
+                    title: query.name,
                     blogType:2
                 }
             }).then((res) =>{
