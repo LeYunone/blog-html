@@ -15,7 +15,7 @@
                              disabled-menus="[]"
                              @upload-image="handleUploadImage"></v-md-editor>
             </div>
-            <el-button class="editor-btn" type="primary" @click="openDia">提交文章</el-button>
+            <el-button class="editor-btn" type="primary" @click="addArticle=true">提交文章</el-button>
             <el-button class="editor-btn" type="primary" @click="addNotice=true">发布网站公告</el-button>
             <el-button class="editor-btn" type="primary" @click="addAnime=true">ANIME</el-button>
         </div>
@@ -28,7 +28,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="addNotice = false">取 消</el-button>
-                <el-button type="primary" @click="submitNotice">确 定</el-button>
+                <el-button type="primary" @click="submit(2)">确 定</el-button>
             </div>
         </el-dialog>
 
@@ -46,16 +46,7 @@
 
         <el-dialog title="添加" v-model="addAnime">
             <el-form :model="temp">
-                <el-upload
-                        class="blog_cover_upload"
-                        action="/leyuna/tourist/requestUpImg"
-                        :show-file-list="false"
-                        :on-success="handleSuccess">
-                    <el-avatar class="blog_cover" fit="contain" v-if="animeImgSrc" shape="square" :size="100"
-                               :src="animeImgSrc"></el-avatar>
-                </el-upload>
-
-                <v-md-editor v-model="temp.remarks"
+                <v-md-editor v-model="temp.foreword"
                              :include-level="[1,2,3,4]"
                              left-toolbar="undo redo clear |
                              h bold italic strikethrough quote |
@@ -64,8 +55,7 @@
                              :toolbar="toolbar"
                              height="400px"
                              disabled-menus="[]"
-                             @upload-image="handleUploadImage"></v-md-editor>
-
+                             @upload-image="handleUploadImage"/>
                 <el-form-item label="文章标题" :label-width="formLabelWidth">
                     <el-input v-model="temp.title" autocomplete="off"></el-input>
                 </el-form-item>
@@ -76,18 +66,26 @@
 
             <div slot="footer" class="dialog-footer">
                 <el-button @click="addAnime = false">取 消</el-button>
-                <el-button type="primary" @click="submitAnime">确 定</el-button>
+                <el-button type="primary" @click="submit">确 定</el-button>
             </div>
         </el-dialog>
 
-        <el-dialog title="添加" v-model="dialogFormVisible">
+        <el-dialog title="添加" v-model="addArticle">
             <el-form :model="temp">
-
                 <el-form-item label="文章标题" :label-width="formLabelWidth">
                     <el-input v-model="temp.title" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="前言" :label-width="formLabelWidth">
-                    <el-input :rows="6" type="textarea" v-model="temp.remarks" autocomplete="off"></el-input>
+                    <v-md-editor v-model="temp.foreword"
+                                 :include-level="[1,2,3,4]"
+                                 left-toolbar="undo redo clear |
+                             h bold italic strikethrough quote |
+                             ul ol table hr |
+                             link image code emoji emoToolbar |"
+                                 :toolbar="toolbar"
+                                 height="400px"
+                                 disabled-menus="[]"
+                                 @upload-image="handleUploadImage"></v-md-editor>
                 </el-form-item>
 
                 <el-form-item label="文章标签" :label-width="formLabelWidth">
@@ -111,37 +109,40 @@
                     </el-input>
                     <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
                 </el-form-item>
-
-                <el-form-item label="文章分类" :label-width="formLabelWidth">
-                    <el-cascader
-                            v-model="temp.type"
-                            :emitPath=false
-                            :options="options"
-                            :props="{ expandTrigger: 'hover' }"
-                            :show-all-levels=false
-                    ></el-cascader>
+                <el-form-item>
+                    <el-select class="main-select-tree" ref="selectTree" v-model="value" style="width: 560px;">
+                        <el-option v-for="item in formatData(menuTree)" :key="item.value" :label="item.label"
+                                   :value="item.value" style="display: none;"/>
+                        <el-tree class="main-select-el-tree" ref="selecteltree"
+                                 :data="menuTree"
+                                 node-key="id"
+                                 highlight-current
+                                 :props="defaultProps"
+                                 @node-click="handleNodeClick"
+                                 :current-node-key="value"
+                                 :expand-on-click-node="expandOnClickNode"
+                                 default-expand-all/>
+                    </el-select>
                 </el-form-item>
             </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="submit">确 定</el-button>
+            <div slot="footer" class="addArticle">
+                <el-button @click="addArticle = false">取 消</el-button>
+                <el-button type="primary" @click="submit(1)">确 定</el-button>
             </div>
         </el-dialog>
     </div>
 </template>
 
-<script>
+<script lang="ts">
     import {ref, reactive} from "vue";
     import {ElMessage, ElMessageBox} from "element-plus";
     import axios from "axios";
-    import VueMarkdownEditor, {xss} from '@kangc/v-md-editor';
 
     export default {
         data() {
             let self = this
             return {
-                animeImgSrc: "",
-                animeImgDia: false,
+                menuTree: "",
                 addAnime: false,
                 emoDia: false,
                 toolbar: {
@@ -162,22 +163,51 @@
                     text: "",
                     title: "",
                     type: [],
-                    remarks: "",
+                    foreword: "",
                     link: "",
                     cover: ""
                 },
                 addNotice: false,
+                addArticle: false,
+                value: "",
+                expandOnClickNode: true,
+                options: [],
+                defaultProps: {
+                    children: 'children',
+                    label: 'label'
+                }
             };
         },
+        mounted: function () {
+            this.getTree();
+        },
         methods: {
-            handleSuccess(res, file) {
-                if (res.status) {
-                    this.animeImgSrc = URL.createObjectURL(file.raw);
-                    this.temp.cover = file.raw;
-                } else {
-                    this.$message.error("别太频繁，明天再来换头像吧");
-                    this.animeImgSrc = res.message;
-                }
+            // 四级菜单
+            formatData(data) {
+                let options = [];
+                data.forEach((item, key) => {
+                    options.push({label: item.label, value: item.id});
+                    if (item.children) {
+                        item.children.forEach((items, keys) => {
+                            options.push({label: items.label, value: items.id});
+                            if (items.children) {
+                                items.children.forEach((itemss, keyss) => {
+                                    options.push({label: itemss.label, value: itemss.id});
+                                    if (itemss.children) {
+                                        itemss.children.forEach((itemsss, keysss) => {
+                                            options.push({label: itemsss.label, value: itemsss.id});
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+                return options;
+            },
+            handleNodeClick(node) {
+                this.value = node.id;
+                this.$refs.selectTree.blur();
             },
             //添加表情包到mark中
             markEmoImg(emo) {
@@ -203,69 +233,17 @@
             preText(pretext) {
                 return pretext.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
             },
-            submitAnime() {
-                console.log(this.temp.cover);
-
-                let formData = new FormData();
-                formData.append('cover', this.temp.cover);
-                formData.append('title', this.temp.title);
-                formData.append('blogContent', this.temp.text);
-                formData.append('blogType', 4);
-                formData.append('blogLink', this.temp.link);
-                formData.append('remarks',this.temp.remarks);
-                
-                axios({
-                    url: "/leyuna/blog/addBlog",
-                    method: "POST",
-                    processData: false, // 使数据不做处理
-                    contentType: false,
-                    data: formData
-                }).then((res) => {
-                    var data = res.data;
-                    if (data.status) {
-                        ElMessage.success('发布成功');
-                    } else {
-                        ElMessage.error(data.message);
-                    }
-                    this.$router.replace({
-                        path: '/dashboard',
-                        name: "dashboard"
-                    })
-                })
-            },
-            submitNotice() {
-                axios({
-                    url: "/leyuna/blog/addBlog",
-                    method: "POST",
-                    data: {
-                        title: this.temp.title,
-                        blogContent: this.temp.text,
-                        blogType: 2,
-                    }
-                }).then((res) => {
-                    var data = res.data;
-                    if (data.status) {
-                        ElMessage.success('发布成功');
-                    } else {
-                        ElMessage.error(data.message);
-                    }
-                    this.$router.replace({
-                        path: '/dashboard',
-                        name: "dashboard"
-                    })
-                })
-            },
-            submit() {
+            submit(type) {
                 axios({
                     url: "/leyuna/blog/addBlog",
                     method: "POST",
                     data: {
                         "blogContent": this.temp.text,
-                        "type": this.temp.type[1],
                         "tags": this.dynamicTags,
                         "title": this.temp.title,
-                        "remarks": this.preText(this.temp.remarks),
-                        blogType: 1
+                        "menuId":this.value,
+                        "foreword": this.temp.foreword,
+                        blogType: type
                     }
                 }).then((res) => {
                     var data = res.data;
@@ -297,23 +275,21 @@
                     this.$refs.saveTagInput.$refs.input.focus();
                 });
             },
-
             handleUploadImage(event, insertImage, files) {
                 // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
-                let file = files[0];
                 let formData = new FormData();
                 formData.append('file', files[0]);
                 formData.append("type", "1");
                 // console.log(file.name+"==="+file.size);
                 axios({
-                    url: "/leyuna/server/updownimg",
+                    url: "/leyuna/file/upload",
                     method: "POST",
                     data: formData
                 }).then((res) => {
                     var data = res.data;
                     if (data.status) {
                         insertImage({
-                            url: data.data,
+                            url: data.data.url,
                             desc: files[0].name,
                             width: 'auto',
                             height: 'auto',
@@ -321,40 +297,38 @@
                     } else {
                         ElMessage.error(data.message);
                     }
-                    // 此处只做示例
                 })
             },
-        },
-
-
-        setup() {
-            let dialogFormVisible = ref(false);
-            let options = ref([]);
-            const openDia = () => {
+            getTree() {
                 axios({
-                    url: "/leyuna/tagType/getTypeInNav",
+                    method: 'GET',
+                    url: '/leyuna/menu/getMenuTree',
                 }).then((res) => {
                     var data = res.data;
                     if (data.status) {
-                        options.value = data.data;
-                        dialogFormVisible.value = true;
+                        this.menuTree = data.data
+                        console.log(this.menuTree)
                     } else {
                         ElMessage.error(data.message);
                     }
-
                 })
-            };
-            return {
-                options,
-                openDia,
-                dialogFormVisible,
             }
-        }
+        },
     }
 </script>
 <style>
     .editor-btn {
         margin-top: 20px;
+    }
+
+    .main-select-el-tree .el-tree-node .is-current > .el-tree-node__content {
+        font-weight: bold;
+        color: #409eff;
+    }
+
+    .main-select-el-tree .el-tree-node.is-current > .el-tree-node__content {
+        font-weight: bold;
+        color: #409eff;
     }
 
     .blog_cover_upload .el-upload {

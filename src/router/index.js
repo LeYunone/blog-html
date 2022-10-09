@@ -116,19 +116,12 @@ const routes = [
                 },
                 component : () => import("../views/TagTable.vue" )
             },{
-                path: '/type',
-                name: 'type',
+                path: '/menu',
+                name: 'menu',
                 meta:{
-                    title: '分类管理'
+                    title: '菜单管理'
                 },
-                component : () => import("../views/TypeTable.vue")
-            },{
-                path: '/typeNav',
-                name: 'typeNav',
-                meta:{
-                    title: '分类导航'
-                },
-                component : () => import("../views/TypeNavTable.vue")
+                component : () => import("../views/MenuTable.vue")
             },{
                 path: '/blogTable',
                 name: 'blogTable',

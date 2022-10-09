@@ -101,7 +101,7 @@ export default {
         const getData = () => {
             axios({
                 method:'get',
-                url: '/leyuna/tagType/tags',
+                url: '/leyuna/tag/tags',
                 params: {
                     index: query.pageIndex,
                     size: query.pageSize,
@@ -137,8 +137,8 @@ export default {
                 type: "warning",
             }).then(() => {
                 axios({
-                    url:"/leyuna/tagType/deleteTagsAndTypes",
-                    method:'GET',
+                    url:"/leyuna/tag/delete",
+                    method:'POST',
                     params:{
                         tags:tableData.value[index].id
                     }
@@ -170,7 +170,7 @@ export default {
         const saveAdd = () => {
             addVisible.value = false;
             axios({
-                url:'/leyuna/tagType/addTagsAndTypes',
+                url:'/leyuna/tag/add',
                 method:'POST',
                 params: {
                     tags:form.addName
@@ -196,12 +196,11 @@ export default {
             editVisible.value = false;
             var rowData=tableData.value[idx];
             axios({
-                url:'/leyuna/tagType/updateTagAndTypes',
-                method:'GET',
-                params: {
+                url:'/leyuna/tag/update',
+                method:'POST',
+                data: {
                     id:rowData.id,
-                    newName:form.name,
-                    name:"tag"
+                    tagName:form.name,
                 }
             }).then((res)=>{
                 var data = res.data;

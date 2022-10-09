@@ -55,12 +55,8 @@
                             title: "标签管理",
                         },
                         {
-                            index: "/type",
-                            title: "分类管理",
-                        },
-                        {
-                            index: "/typeNav",
-                            title: "分类导航",
+                            index: "/menu",
+                            title: "菜单管理",
                         },
                         {
                             icon: "el-icon-lx-calendar",
