@@ -39,8 +39,8 @@
                 center>
             <el-image v-for="item in emoImg"
                       style="width: 60px; height: 60px;margin: 9px"
-                      :src="item"
-                      @click="markEmoImg(item)"
+                      :src="item.fileUrl"
+                      @click="markEmoImg(item.fileUrl)"
                       fit="contain"></el-image>
         </el-dialog>
 
@@ -180,6 +180,7 @@
         },
         mounted: function () {
             this.getTree();
+            this.thisBlog();
         },
         methods: {
             // 四级菜单
@@ -217,8 +218,11 @@
             //获得服务器表情包
             getEmoList() {
                 axios({
-                    url: "/leyuna/blog/getEmoticon",
-                    method: "GET"
+                    url: "/leyuna/file/list",
+                    method: "GET",
+                    params:{
+                        "fileType":2
+                    }
                 }).then((res) => {
                     var data = res.data;
                     if (data.status) {
@@ -234,10 +238,12 @@
                 return pretext.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
             },
             submit(type) {
+                const blogId = this.$route.query.blogId;
                 axios({
-                    url: "/leyuna/blog/addBlog",
+                    url: "/leyuna/blog/saveBlog",
                     method: "POST",
                     data: {
+                        "id":blogId,
                         "blogContent": this.temp.text,
                         "tags": this.dynamicTags,
                         "title": this.temp.title,
@@ -312,7 +318,24 @@
                         ElMessage.error(data.message);
                     }
                 })
-            }
+            },
+            thisBlog() {
+                const blogId = this.$route.query.blogId;
+                if(blogId){
+                    axios({
+                        url: "/leyuna/blog/blog/" + blogId,
+                        method: "GET",
+                    }).then((res) => {
+                        var data = res.data;
+                        if(data.status){
+                            this.temp.title = data.data.title;
+                            this.temp.text = data.data.blogContent;
+                            this.temp.foreword = data.data.foreword;
+                            this.value = data.data.menuId
+                        }
+                    })
+                }
+            },
         },
     }
 </script>

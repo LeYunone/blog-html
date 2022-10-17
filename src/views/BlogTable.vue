@@ -53,7 +53,7 @@ export default {
     name: "blogTable",
     methods:{
         editBlog(row){
-            const { href }=this.$router.resolve({path:'/blogEdit',query:{blogId:row.id}});
+            const { href }=this.$router.resolve({path:'/markdown',query:{blogId:row.id}});
             window.open(href, '_blank');
         },
         createDocument(){

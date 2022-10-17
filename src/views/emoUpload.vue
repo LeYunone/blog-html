@@ -12,8 +12,8 @@
             <div class="plugins-tips">
                 站内使用表情
             </div>
-            <el-upload list-type="picture" :data="emoData" action="/leyuna/server/updownimg"
-                       :file-list="fileList" class="upload-demo" drag
+            <el-upload list-type="picture" :data="emoData" action="/leyuna/file/upload"
+                       :file-list="files" class="upload-demo" drag
                        multiple>
                 <i class="el-icon-upload"></i>
                 <div class="el-upload__text">
@@ -36,7 +36,7 @@
                 emoData: {
                     type: "2"
                 },
-                fileList: [],
+                files: [],
             }
         },
         methods: {}
